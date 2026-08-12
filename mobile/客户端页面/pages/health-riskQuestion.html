@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>健康评估问卷 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-riskQuestion.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center" id="pageTitle">健康评估问卷</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    
+    <!-- 问卷内容 -->
+    <div class="question">
+        <div class="q-tit">
+            <div class="type-num">
+                <span class="cur-num" id="currentQuestion">1</span>
+                <span class="total-num">/ <span id="totalQuestions">5</span></span>
+            </div>
+            <p id="questionText">您的性别是？</p>
+        </div>
+        
+        <div class="q-choose">
+            <div class="choose-items">
+                <div class="radio">
+                    <input type="radio" name="answer" id="option1" value="1">
+                    <label for="option1"></label>
+                    <span>男</span>
+                </div>
+                <div class="radio">
+                    <input type="radio" name="answer" id="option2" value="2">
+                    <label for="option2"></label>
+                    <span>女</span>
+                </div>
+            </div>
+            
+            <div class="tool-btn">
+                <a href="javascript:void(0)" class="btn" id="nextBtn" style="background-color: #038bdf; color: #fff; padding: 12px 40px;">下一题</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    // 获取URL参数中的评估类型
+    var urlParams = new URLSearchParams(window.location.search);
+    var assessmentType = urlParams.get('type') || 'basic';
+    
+    // 设置页面标题
+    var typeNames = {
+        'basic': '基础信息评估',
+        'family': '家族病史评估',
+        'lifestyle': '生活方式评估'
+    };
+    $('#pageTitle').text(typeNames[assessmentType] + '问卷');
+    
+    // 问卷题目数据
+    var questions = {
+        'basic': [
+            { question: '您的性别是？', options: ['男', '女'] },
+            { question: '您的年龄是？', options: ['18-30岁', '31-45岁', '46-60岁', '60岁以上'] },
+            { question: '您的身高是？', options: ['160cm以下', '160-170cm', '171-180cm', '180cm以上'] },
+            { question: '您的体重是？', options: ['50kg以下', '50-65kg', '66-80kg', '80kg以上'] },
+            { question: '您目前的健康状况如何？', options: ['非常好', '良好', '一般', '较差'] }
+        ],
+        'family': [
+            { question: '您的家族中有高血压病史吗？', options: ['有', '没有', '不确定'] },
+            { question: '您的家族中有糖尿病病史吗？', options: ['有', '没有', '不确定'] },
+            { question: '您的家族中有心脏病病史吗？', options: ['有', '没有', '不确定'] },
+            { question: '您的家族中有癌症病史吗？', options: ['有', '没有', '不确定'] },
+            { question: '您的家族中有遗传性疾病吗？', options: ['有', '没有', '不确定'] }
+        ],
+        'lifestyle': [
+            { question: '您每周运动几次？', options: ['从不运动', '1-2次', '3-4次', '5次以上'] },
+            { question: '您每天睡眠时间是？', options: ['少于6小时', '6-7小时', '7-8小时', '8小时以上'] },
+            { question: '您的饮食习惯如何？', options: ['非常健康', '比较健康', '一般', '不太健康'] },
+            { question: '您是否有吸烟习惯？', options: ['从不吸烟', '偶尔吸烟', '经常吸烟', '已戒烟'] },
+            { question: '您是否有饮酒习惯？', options: ['从不饮酒', '偶尔饮酒', '经常饮酒', '已戒酒'] }
+        ]
+    };
+    
+    var currentQuestions = questions[assessmentType];
+    var currentQuestionIndex = 0;
+    var answers = [];
+    
+    // 更新题目显示
+    function updateQuestion() {
+        if (currentQuestionIndex >= currentQuestions.length) {
+            // 所有题目完成，跳转到结果页
+            showResult();
+            return;
+        }
+        
+        var question = currentQuestions[currentQuestionIndex];
+        $('#currentQuestion').text(currentQuestionIndex + 1);
+        $('#totalQuestions').text(currentQuestions.length);
+        $('#questionText').text(question.question);
+        
+        // 更新选项
+        var optionsHtml = '';
+        question.options.forEach(function(option, index) {
+            optionsHtml += `
+                <div class="radio">
+                    <input type="radio" name="answer" id="option${index + 1}" value="${index + 1}">
+                    <label for="option${index + 1}"></label>
+                    <span>${option}</span>
+                </div>
+            `;
+        });
+        $('.choose-items').html(optionsHtml);
+        
+        // 更新按钮文本
+        if (currentQuestionIndex === currentQuestions.length - 1) {
+            $('#nextBtn').text('提交评估');
+        } else {
+            $('#nextBtn').text('下一题');
+        }
+    }
+    
+    // 下一题按钮点击事件
+    $('#nextBtn').click(function() {
+        var selectedOption = $('input[name="answer"]:checked').val();
+        if (!selectedOption) {
+            alert('请选择一个选项');
+            return;
+        }
+        
+        answers.push(selectedOption);
+        currentQuestionIndex++;
+        updateQuestion();
+    });
+    
+    // 显示评估结果
+    function showResult() {
+        // 简单的评估逻辑
+        var score = 0;
+        answers.forEach(function(answer) {
+            score += parseInt(answer);
+        });
+        
+        var resultLevel = '';
+        var resultColor = '';
+        
+        if (score <= 8) {
+            resultLevel = '健康';
+            resultColor = '#4caf50';
+        } else if (score <= 12) {
+            resultLevel = '良好';
+            resultColor = '#8bc34a';
+        } else if (score <= 16) {
+            resultLevel = '注意';
+            resultColor = '#ff9800';
+        } else {
+            resultLevel = '需改善';
+            resultColor = '#f44336';
+        }
+        
+        // 保存评估结果
+        var assessmentResult = {
+            type: assessmentType,
+            date: new Date().toLocaleDateString(),
+            level: resultLevel,
+            score: score,
+            answers: answers
+        };
+        
+        // 存储到本地
+        var assessmentHistory = JSON.parse(localStorage.getItem('assessmentHistory') || '[]');
+        assessmentHistory.push(assessmentResult);
+        localStorage.setItem('assessmentHistory', JSON.stringify(assessmentHistory));
+        
+        // 显示结果
+        alert('评估完成！\n\n评估结果：' + resultLevel + '\n健康评分：' + score + '\n\n建议：请继续保持良好的生活习惯，定期进行健康检查。');
+        
+        // 返回健康评估主页
+        window.location.href = 'health-risk.html';
+    }
+    
+    // 初始化第一题
+    updateQuestion();
+});
+</script>
+</body>
+</html>

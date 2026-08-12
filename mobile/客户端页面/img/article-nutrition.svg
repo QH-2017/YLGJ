@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+  <defs><linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#e67e22;stop-opacity:0.15"/><stop offset="100%" style="stop-color:#d35400;stop-opacity:0.08"/></linearGradient></defs>
+  <rect width="400" height="200" fill="url(#bg6)" rx="8"/>
+  <circle cx="300" cy="75" r="45" fill="#e67e22" opacity="0.12"/>
+  <path d="M300 30 A45 45 0 0 1 345 75 L300 75Z" fill="#e74c3c" opacity="0.3"/>
+  <path d="M300 75 A45 45 0 0 1 270 115 L300 75Z" fill="#27ae60" opacity="0.3"/>
+  <path d="M300 75 A45 45 0 0 0 260 55 L300 75Z" fill="#f39c12" opacity="0.3"/>
+  <path d="M300 75 A45 45 0 0 0 340 95 L300 75Z" fill="#3498db" opacity="0.2"/>
+  <text x="290" y="78" font-family="Arial" font-size="10" fill="#fff" font-weight="bold">均衡</text>
+  <text x="50" y="55" font-family="Arial" font-size="12" fill="#e74c3c">● 蛋白质</text>
+  <text x="50" y="75" font-family="Arial" font-size="12" fill="#27ae60">● 维生素</text>
+  <text x="50" y="95" font-family="Arial" font-size="12" fill="#f39c12">● 碳水化合物</text>
+  <text x="50" y="155" font-family="Arial" font-size="16" fill="#333" font-weight="bold">营养均衡的饮食搭配</text>
+  <text x="50" y="178" font-family="Arial" font-size="11" fill="#999">合理膳食 · 营养搭配 · 健康饮食</text>
+</svg>

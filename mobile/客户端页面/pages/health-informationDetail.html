@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>健康咨询详情 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-informationDetail.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center" id="pageTitle">健康咨询详情</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    
+    <!-- 文章内容 -->
+    <div class="article">
+        <h2 class="title" id="articleTitle">高血压的预防与控制</h2>
+        <p class="subtitle" id="articleSubtitle">发布时间：2026-07-01 | 来源：健康资讯</p>
+        
+        <div class="box" id="articleContent">
+            <p>高血压是最常见的慢性病之一，也是心脑血管病最主要的危险因素。据统计，我国高血压患病率高达25.2%，患者人数已超过2.7亿。</p>
+            
+            <p><strong>一、高血压的危害</strong></p>
+            <p>长期高血压会导致心脏、大脑、肾脏等重要器官的损害，增加冠心病、脑卒中、肾功能衰竭等疾病的风险。因此，积极预防和控制高血压至关重要。</p>
+            
+            <p><strong>二、预防措施</strong></p>
+            <p>1. 合理饮食：减少盐分摄入，每日食盐量不超过6克；多吃蔬菜水果，少吃油腻食物。</p>
+            <p>2. 适量运动：每周进行至少150分钟的中等强度有氧运动，如快走、游泳等。</p>
+            <p>3. 控制体重：保持BMI在18.5-23.9之间，避免肥胖。</p>
+            <p>4. 戒烟限酒：吸烟和过量饮酒都会增加高血压风险。</p>
+            <p>5. 心理平衡：保持良好的心态，避免长期精神紧张。</p>
+            
+            <p><strong>三、日常控制方法</strong></p>
+            <p>1. 定期监测血压：建议每周至少测量一次血压，了解自己的血压状况。</p>
+            <p>2. 遵医嘱用药：已确诊高血压的患者应按时服药，不可随意停药或减量。</p>
+            <p>3. 建立健康档案：记录血压变化、用药情况等，便于医生评估治疗效果。</p>
+            <p>4. 定期体检：每年至少进行一次全面体检，及时发现并处理并发症。</p>
+            
+            <p><strong>四、紧急情况处理</strong></p>
+            <p>如果出现剧烈头痛、胸闷、呼吸困难等症状，应立即就医或拨打急救电话。高血压急症需要及时处理，否则可能危及生命。</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; padding-bottom: 20px;">
+            <a href="health-information.html" style="color: #038bdf; text-decoration: none;">← 返回健康咨询列表</a>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    // 获取URL参数中的标题
+    var urlParams = new URLSearchParams(window.location.search);
+    var title = urlParams.get('title') || '健康咨询详情';
+    
+    // 设置页面标题
+    $('#pageTitle').text(title);
+    $('#articleTitle').text(title);
+    
+    // 根据标题加载对应内容
+    loadArticleContent(title);
+});
+
+// 加载文章内容
+function loadArticleContent(title) {
+    // 这里可以根据标题从服务器加载对应的文章内容
+    // 目前使用静态内容
+    var articles = {
+        '高血压的预防与控制': {
+            subtitle: '发布时间：2026-07-01 | 来源：健康资讯',
+            content: `
+                <p>高血压是最常见的慢性病之一，也是心脑血管病最主要的危险因素。据统计，我国高血压患病率高达25.2%，患者人数已超过2.7亿。</p>
+                
+                <p><strong>一、高血压的危害</strong></p>
+                <p>长期高血压会导致心脏、大脑、肾脏等重要器官的损害，增加冠心病、脑卒中、肾功能衰竭等疾病的风险。因此，积极预防和控制高血压至关重要。</p>
+                
+                <p><strong>二、预防措施</strong></p>
+                <p>1. 合理饮食：减少盐分摄入，每日食盐量不超过6克；多吃蔬菜水果，少吃油腻食物。</p>
+                <p>2. 适量运动：每周进行至少150分钟的中等强度有氧运动，如快走、游泳等。</p>
+                <p>3. 控制体重：保持BMI在18.5-23.9之间，避免肥胖。</p>
+                <p>4. 戒烟限酒：吸烟和过量饮酒都会增加高血压风险。</p>
+                <p>5. 心理平衡：保持良好的心态，避免长期精神紧张。</p>
+                
+                <p><strong>三、日常控制方法</strong></p>
+                <p>1. 定期监测血压：建议每周至少测量一次血压，了解自己的血压状况。</p>
+                <p>2. 遵医嘱用药：已确诊高血压的患者应按时服药，不可随意停药或减量。</p>
+                <p>3. 建立健康档案：记录血压变化、用药情况等，便于医生评估治疗效果。</p>
+                <p>4. 定期体检：每年至少进行一次全面体检，及时发现并处理并发症。</p>
+                
+                <p><strong>四、紧急情况处理</strong></p>
+                <p>如果出现剧烈头痛、胸闷、呼吸困难等症状，应立即就医或拨打急救电话。高血压急症需要及时处理，否则可能危及生命。</p>
+            `
+        },
+        '糖尿病患者的饮食指南': {
+            subtitle: '发布时间：2026-06-28 | 来源：营养健康',
+            content: `
+                <p>合理的饮食对糖尿病患者至关重要。良好的饮食习惯可以帮助控制血糖水平，预防并发症，提高生活质量。</p>
+                
+                <p><strong>一、饮食原则</strong></p>
+                <p>1. 控制总热量：根据自身情况计算每日所需热量，合理分配三餐。</p>
+                <p>2. 均衡营养：保证蛋白质、脂肪、碳水化合物的合理比例。</p>
+                <p>3. 定时定量：规律进餐，避免暴饮暴食。</p>
+                <p>4. 低盐低脂：减少盐分和脂肪摄入，预防心血管疾病。</p>
+                
+                <p><strong>二、推荐食物</strong></p>
+                <p>1. 主食：选择全谷物、杂粮等低升糖指数食物。</p>
+                <p>2. 蔬菜：多吃绿叶蔬菜，适量食用根茎类蔬菜。</p>
+                <p>3. 水果：选择低糖水果，如苹果、梨、柚子等。</p>
+                <p>4. 蛋白质：适量摄入鱼、禽、蛋、奶等优质蛋白。</p>
+                
+                <p><strong>三、饮食禁忌</strong></p>
+                <p>1. 避免高糖食物：如糖果、甜饮料、蛋糕等。</p>
+                <p>2. 限制高脂肪食物：如油炸食品、肥肉等。</p>
+                <p>3. 控制精制碳水化合物：如白米饭、白面包等。</p>
+                <p>4. 避免饮酒：酒精会影响血糖控制。</p>
+            `
+        },
+        '科学运动，健康生活': {
+            subtitle: '发布时间：2026-06-25 | 来源：运动健康',
+            content: `
+                <p>适量的运动有助于保持健康体重、降低慢性病风险、改善心理状态。科学运动是健康生活的重要组成部分。</p>
+                
+                <p><strong>一、运动的好处</strong></p>
+                <p>1. 控制体重：运动消耗热量，帮助维持健康体重。</p>
+                <p>2. 增强心肺功能：有氧运动可以提高心脏和肺部的功能。</p>
+                <p>3. 改善心理健康：运动可以释放压力，改善情绪。</p>
+                <p>4. 预防疾病：规律运动可以降低高血压、糖尿病等疾病风险。</p>
+                
+                <p><strong>二、运动建议</strong></p>
+                <p>1. 有氧运动：每周至少150分钟中等强度有氧运动，如快走、游泳、骑自行车。</p>
+                <p>2. 力量训练：每周2-3次力量训练，增强肌肉力量。</p>
+                <p>3. 柔韧性训练：定期进行拉伸，保持关节灵活。</p>
+                <p>4. 平衡训练：特别是老年人，应注重平衡能力训练。</p>
+                
+                <p><strong>三、注意事项</strong></p>
+                <p>1. 循序渐进：根据自身情况逐渐增加运动量。</p>
+                <p>2. 热身放松：运动前后做好热身和放松。</p>
+                <p>3. 补充水分：运动前后及时补充水分。</p>
+                <p>4. 避免过度：如出现不适应立即停止运动。</p>
+            `
+        }
+    };
+    
+    // 查找对应文章
+    var article = articles[title];
+    if (article) {
+        $('#articleSubtitle').text(article.subtitle);
+        $('#articleContent').html(article.content);
+    }
+}
+</script>
+</body>
+</html>

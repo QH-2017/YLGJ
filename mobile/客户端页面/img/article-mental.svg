@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+  <defs><linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#9b59b6;stop-opacity:0.15"/><stop offset="100%" style="stop-color:#8e44ad;stop-opacity:0.08"/></linearGradient></defs>
+  <rect width="400" height="200" fill="url(#bg4)" rx="8"/>
+  <circle cx="300" cy="75" r="45" fill="#9b59b6" opacity="0.12"/>
+  <circle cx="300" cy="75" r="30" fill="#9b59b6" opacity="0.2"/>
+  <text x="283" y="83" font-family="Arial" font-size="26">🧠</text>
+  <circle cx="100" cy="60" r="15" fill="#9b59b6" opacity="0.1"/>
+  <text x="90" y="66" font-family="Arial" font-size="14">💚</text>
+  <circle cx="160" cy="45" r="12" fill="#8e44ad" opacity="0.08"/>
+  <text x="151" y="50" font-family="Arial" font-size="12">☀</text>
+  <circle cx="200" cy="100" r="18" fill="#9b59b6" opacity="0.1"/>
+  <text x="189" y="106" font-family="Arial" font-size="14">🌸</text>
+  <text x="50" y="155" font-family="Arial" font-size="16" fill="#333" font-weight="bold">心理健康的重要性</text>
+  <text x="50" y="178" font-family="Arial" font-size="11" fill="#999">情绪管理 · 压力释放 · 心灵平衡</text>
+</svg>

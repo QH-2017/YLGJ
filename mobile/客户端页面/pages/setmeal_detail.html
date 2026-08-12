@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>预约详情</title>
+    <link rel="stylesheet" href="../css/page-health-orderDetail.css" />
+    <script src="../plugins/vue/vue.js"></script>
+    <script src="../plugins/vue/axios-0.18.0.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+    <script>var API_BASE_URL = 'http://localhost:8080';</script>
+    <script>
+        var id = getUrlParam("id");
+    </script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div id="app" class="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">医疗管家</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    <!-- 页面内容 -->
+    <div class="contentBox">
+        <!-- 加载状态 -->
+        <div v-if="loading" style="text-align: center; padding: 50px;">
+            <p>加载中...</p>
+        </div>
+        
+        <!-- 错误提示 -->
+        <div v-else-if="error" style="text-align: center; padding: 50px;">
+            <p style="color: #f44336;">{{error}}</p>
+            <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px;">重试</button>
+        </div>
+        
+        <!-- 详情内容 -->
+        <template v-else>
+            <div class="card">
+                <div class="project-img">
+                    <img :src="imgUrl" onerror="this.src='../img/widget-order_01.png'" width="100%" height="100%" />
+                </div>
+                <div class="project-text">
+                    <h4 class="tit">{{setmeal.name}}</h4>
+                    <p class="subtit">{{setmeal.remark}}</p>
+                    <p class="keywords">
+                        <span>{{setmeal.sex == '0' ? '性别不限' : setmeal.sex == '1' ? '男':'女'}}</span>
+                        <span>{{setmeal.age}}</span>
+                    </p>
+                </div>
+                <!--
+                <div class="project-know">
+                    <a href="orderNotice.html" class="link-page">
+                        <i class="icon-ask-circle"><span class="path1"></span><span class="path2"></span></i>
+                        <span class="word">预约须知</span>
+                        <span class="arrow"><i class="icon-rit-arrow"></i></span>
+                    </a>
+                </div>
+                -->
+            </div>
+            <div class="table-listbox">
+                <div class="box-title">
+                    <i class="icon-zhen"><span class="path1"></span><span class="path2"></span></i>
+                    <span>套餐详情</span>
+                </div>
+                <div class="box-table">
+                    <div class="table-title">
+                        <div class="tit-item flex2">项目名称</div>
+                        <div class="tit-item  flex3">项目内容</div>
+                        <div class="tit-item  flex3">项目解读</div>
+                    </div>
+                    <div class="table-content">
+                        <ul class="table-list">
+                            <li class="table-item" v-for="checkgroup in checkGroups">
+                                <div class="item flex2">{{checkgroup.name}}</div>
+                                <div class="item flex3">
+                                    <label v-for="checkitem in checkgroup.checkItems">
+                                        {{checkitem.name}}
+                                    </label>
+                                </div>
+                                <div class="item flex3">{{checkgroup.remark}}</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box-button">
+                        <a @click="toOrderInfo()" class="order-btn">立即预约</a>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+<script>
+    // 配置axios默认baseURL指向后端
+    axios.defaults.baseURL = API_BASE_URL;
+    
+    var vue = new Vue({
+        el:'#app',
+        data:{
+            imgUrl:null,
+            setmeal:{},
+            checkGroups:[],
+            loading: true,
+            error: null
+        },
+        methods:{
+            toOrderInfo(){
+                window.location.href = "orderInfo.html?id=" + id;
+            },
+            getImgUrl(img) {
+                if (!img) return '../img/widget-order_01.png';
+                if (img.startsWith('http')) return img;
+                if (img.startsWith('/uploads/')) return API_BASE_URL + img;
+                if (/^\d{17,}\.\w+$/.test(img)) return '../img/widget-order_01.png';
+                return API_BASE_URL + '/uploads/setmeal/' + img;
+            },
+            loadSetmealDetail() {
+                var self = this;
+                if (!id) {
+                    self.error = '缺少套餐ID参数';
+                    self.loading = false;
+                    return;
+                }
+                axios.get('/setmeal/findById/' + id)
+                    .then(function(response) {
+                        if (response.data.flag) {
+                            self.setmeal = response.data.data;
+                            self.imgUrl = self.getImgUrl(self.setmeal.img);
+                            self.loadCheckGroups();
+                        } else {
+                            self.error = response.data.message || '加载套餐详情失败';
+                            self.loading = false;
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('请求后端API失败，使用模拟数据', err);
+                        self.setmeal = {
+                            id: id,
+                            name: '基础体检套餐',
+                            remark: '包含常规检查项目，适合一般人群',
+                            img: null,
+                            sex: '0',
+                            age: '18-65岁',
+                            price: 299
+                        };
+                        self.imgUrl = '../img/widget-order_01.png';
+                        self.checkGroups = [
+                            { name: '一般检查', remark: '身高、体重、血压等基础指标', checkItems: [{ name: '身高' }, { name: '体重' }, { name: '血压' }] },
+                            { name: '内科检查', remark: '心、肺、肝、脾等内脏器官检查', checkItems: [{ name: '心脏听诊' }, { name: '肺部听诊' }] },
+                            { name: '血常规', remark: '检查红细胞、白细胞等血液指标', checkItems: [{ name: '红细胞计数' }, { name: '白细胞计数' }] }
+                        ];
+                        self.loading = false;
+                    });
+            },
+            loadCheckGroups() {
+                var self = this;
+                var groupIds = [];
+                if (self.setmeal.setmealCheckGroups && self.setmeal.setmealCheckGroups.length > 0) {
+                    self.setmeal.setmealCheckGroups.forEach(function(item) {
+                        groupIds.push(item.checkgroupId);
+                    });
+                }
+                // 加载所有检查项（用于关联）
+                var allCheckitems = {};
+                axios.get('/checkitem/findAll')
+                    .then(function(res) {
+                        if (res.data.flag) res.data.data.forEach(function(i) { allCheckitems[i.id] = i; });
+                    })
+                    .catch(function() {});
+                // 获取要加载的检查组ID列表
+                var idsToLoad = groupIds.length > 0 ? groupIds : null;
+                var loadGroups = idsToLoad
+                    ? Promise.resolve(idsToLoad)
+                    : axios.get('/checkgroup/findAll').then(function(r) {
+                        return (r.data.data || []).slice(0, 6).map(function(g) { return g.id; });
+                    });
+                loadGroups.then(function(ids) {
+                    if (!ids || ids.length === 0) { self.loading = false; return; }
+                    var tasks = ids.map(function(gid) {
+                        return axios.get('/checkgroup/findById/' + gid).then(function(gr) {
+                            return axios.get('/checkgroup-checkitem/findCheckItemIdsByCheckGroupId/' + gid).then(function(ir) {
+                                var group = gr.data.data;
+                                group.checkItems = (ir.data.data || []).map(function(cid) {
+                                    return allCheckitems[cid] || { id: cid, name: '检查项#' + cid };
+                                });
+                                return group;
+                            }).catch(function() {
+                                var group = gr.data.data;
+                                group.checkItems = [];
+                                return group;
+                            });
+                        });
+                    });
+                    return Promise.all(tasks);
+                }).then(function(groups) {
+                    if (groups) self.checkGroups = groups.filter(Boolean);
+                    self.loading = false;
+                }).catch(function(err) {
+                    console.error('加载检查组失败', err);
+                    self.loading = false;
+                });
+            }
+        },
+        mounted(){
+            this.loadSetmealDetail();
+        }
+    });
+</script>
+</body>

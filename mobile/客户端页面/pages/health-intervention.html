@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>健康干预 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-intervention.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+    <style>
+        .delete-btn { color: #f44336; cursor: pointer; font-size: 12px; margin-left: 8px; }
+        .delete-btn:hover { text-decoration: underline; }
+        .empty-tip { text-align: center; padding: 20px; color: #999; font-size: 13px; }
+        .add-form { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; display: none; }
+        .add-form .form-row { margin-bottom: 10px; }
+        .add-form label { display: block; font-size: 13px; color: #666; margin-bottom: 4px; }
+        .add-form input, .add-form select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        .add-form .btn-group { display: flex; gap: 10px; margin-top: 12px; }
+        .add-form .btn-group button { flex: 1; padding: 8px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; }
+        .btn-confirm { background: #038bdf; color: #fff; }
+        .btn-cancel { background: #e0e0e0; color: #333; }
+        .status-done { color: #4caf50; }
+        .status-pending { color: #ff9800; }
+        .status-overdue { color: #f44336; }
+    </style>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app">
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">健康干预</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    <div class="tab-wrapper">
+        <ul class="tab-menu">
+            <li class="active" data-type="medication">用药提醒</li>
+            <li data-type="exercise">运动计划</li>
+            <li data-type="diet">饮食指导</li>
+            <li data-type="checkup">复查提醒</li>
+        </ul>
+        <div class="tab-content">
+            <div class="item" id="medicationContent">
+                <div class="intro-img"><img src="../img/widget-info01.png" alt="用药提醒" style="width:100%;border-radius:8px;"></div>
+                <div class="table-title"><span>药品名称</span><span>服用时间</span><span>剂量</span></div>
+                <table><tbody id="medicationTable"></tbody></table>
+                <div class="empty-tip" id="medicationEmpty" style="display:none;">暂无用药提醒，点击下方按钮添加</div>
+                <div class="add-form" id="medicationForm">
+                    <div class="form-row"><label>药品名称</label><input type="text" id="med_name" placeholder="如：阿司匹林"></div>
+                    <div class="form-row"><label>服用时间</label><input type="text" id="med_time" placeholder="如：每日早晨"></div>
+                    <div class="form-row"><label>剂量</label><input type="text" id="med_dosage" placeholder="如：100mg"></div>
+                    <div class="btn-group"><button class="btn-confirm" onclick="saveMedication()">确认添加</button><button class="btn-cancel" onclick="toggleForm('medicationForm')">取消</button></div>
+                </div>
+                <div style="text-align:center;margin-top:20px;"><a href="javascript:void(0)" onclick="toggleForm('medicationForm')" style="background-color:#038bdf;color:#fff;padding:10px 30px;border-radius:20px;text-decoration:none;">添加用药提醒</a></div>
+            </div>
+            <div class="item" id="exerciseContent" style="display:none;">
+                <div class="intro-img"><img src="../img/widget-info02.png" alt="运动计划" style="width:100%;border-radius:8px;"></div>
+                <div class="table-title"><span>运动项目</span><span>时长</span><span>频率</span></div>
+                <table><tbody id="exerciseTable"></tbody></table>
+                <div class="empty-tip" id="exerciseEmpty" style="display:none;">暂无运动计划，点击下方按钮添加</div>
+                <div class="add-form" id="exerciseForm">
+                    <div class="form-row"><label>运动项目</label><input type="text" id="exe_name" placeholder="如：快走"></div>
+                    <div class="form-row"><label>运动时长</label><input type="text" id="exe_duration" placeholder="如：30分钟"></div>
+                    <div class="form-row"><label>运动频率</label><input type="text" id="exe_frequency" placeholder="如：每周5次"></div>
+                    <div class="btn-group"><button class="btn-confirm" onclick="saveExercise()">确认添加</button><button class="btn-cancel" onclick="toggleForm('exerciseForm')">取消</button></div>
+                </div>
+                <div style="text-align:center;margin-top:20px;"><a href="javascript:void(0)" onclick="toggleForm('exerciseForm')" style="background-color:#038bdf;color:#fff;padding:10px 30px;border-radius:20px;text-decoration:none;">添加运动计划</a></div>
+            </div>
+            <div class="item" id="dietContent" style="display:none;">
+                <div class="intro-img"><img src="../img/widget-it-1.png" alt="饮食指导" style="width:100%;border-radius:8px;"></div>
+                <div class="table-title"><span>餐次</span><span>建议食物</span><span>注意事项</span></div>
+                <table><tbody id="dietTable"></tbody></table>
+                <div class="empty-tip" id="dietEmpty" style="display:none;">暂无饮食指导，点击下方按钮添加</div>
+                <div class="add-form" id="dietForm">
+                    <div class="form-row"><label>餐次</label><input type="text" id="diet_meal" placeholder="如：早餐"></div>
+                    <div class="form-row"><label>建议食物</label><input type="text" id="diet_food" placeholder="如：全麦面包、鸡蛋"></div>
+                    <div class="form-row"><label>注意事项</label><input type="text" id="diet_note" placeholder="如：避免油炸食品"></div>
+                    <div class="btn-group"><button class="btn-confirm" onclick="saveDiet()">确认添加</button><button class="btn-cancel" onclick="toggleForm('dietForm')">取消</button></div>
+                </div>
+                <div style="text-align:center;margin-top:20px;"><a href="javascript:void(0)" onclick="toggleForm('dietForm')" style="background-color:#038bdf;color:#fff;padding:10px 30px;border-radius:20px;text-decoration:none;">添加饮食指导</a></div>
+            </div>
+            <div class="item" id="checkupContent" style="display:none;">
+                <div class="intro-img"><img src="../img/widget-it-2.png" alt="复查提醒" style="width:100%;border-radius:8px;"></div>
+                <div class="table-title"><span>检查项目</span><span>建议时间</span><span>状态</span></div>
+                <table><tbody id="checkupTable"></tbody></table>
+                <div class="empty-tip" id="checkupEmpty" style="display:none;">暂无复查提醒，点击下方按钮添加</div>
+                <div class="add-form" id="checkupForm">
+                    <div class="form-row"><label>检查项目</label><input type="text" id="ck_name" placeholder="如：血压监测"></div>
+                    <div class="form-row"><label>建议时间</label><input type="text" id="ck_time" placeholder="如：每周一次"></div>
+                    <div class="form-row"><label>状态</label><select id="ck_status"><option value="待进行">待进行</option><option value="已完成">已完成</option><option value="已逾期">已逾期</option></select></div>
+                    <div class="btn-group"><button class="btn-confirm" onclick="saveCheckup()">确认添加</button><button class="btn-cancel" onclick="toggleForm('checkupForm')">取消</button></div>
+                </div>
+                <div style="text-align:center;margin-top:20px;"><a href="javascript:void(0)" onclick="toggleForm('checkupForm')" style="background-color:#038bdf;color:#fff;padding:10px 30px;border-radius:20px;text-decoration:none;">添加复查提醒</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var defaultMedications=[{name:'阿司匹林',time:'每日早晨',dosage:'100mg'},{name:'二甲双胍',time:'每日三餐后',dosage:'500mg'},{name:'氨氯地平',time:'每日早晨',dosage:'5mg'}];
+var defaultExercises=[{name:'快走',duration:'30分钟',frequency:'每周5次'},{name:'游泳',duration:'45分钟',frequency:'每周2次'},{name:'瑜伽',duration:'60分钟',frequency:'每周3次'}];
+var defaultDiets=[{meal:'早餐',food:'全麦面包、鸡蛋、牛奶',note:'避免油炸食品'},{meal:'午餐',food:'瘦肉、蔬菜、糙米饭',note:'控制盐分摄入'},{meal:'晚餐',food:'鱼肉、蔬菜、少量主食',note:'避免过晚进食'}];
+var defaultCheckups=[{name:'血压监测',time:'每周一次',status:'已完成'},{name:'血糖检测',time:'每月一次',status:'待进行'},{name:'心电图检查',time:'每季度一次',status:'已逾期'}];
+function getData(k,d){var s=localStorage.getItem(k);var base=d.slice();if(s){try{var stored=JSON.parse(s);stored.forEach(function(item){var exists=base.some(function(b){return JSON.stringify(b)===JSON.stringify(item)});if(!exists)base.push(item)})}catch(e){}}return base}
+function setData(k,d){localStorage.setItem(k,JSON.stringify(d))}
+function renderMedicationTable(){var d=getData('medicationData',defaultMedications);var h='';d.forEach(function(item,i){h+='<tr><td>'+item.name+'</td><td>'+item.time+'</td><td>'+item.dosage+' <span class="delete-btn" onclick="deleteMedication('+i+')">删除</span></td></tr>'});$('#medicationTable').html(h);$('#medicationEmpty').toggle(d.length===0)}
+function renderExerciseTable(){var d=getData('exerciseData',defaultExercises);var h='';d.forEach(function(item,i){h+='<tr><td>'+item.name+'</td><td>'+item.duration+'</td><td>'+item.frequency+' <span class="delete-btn" onclick="deleteExercise('+i+')">删除</span></td></tr>'});$('#exerciseTable').html(h);$('#exerciseEmpty').toggle(d.length===0)}
+function renderDietTable(){var d=getData('dietData',defaultDiets);var h='';d.forEach(function(item,i){h+='<tr><td>'+item.meal+'</td><td>'+item.food+'</td><td>'+item.note+' <span class="delete-btn" onclick="deleteDiet('+i+')">删除</span></td></tr>'});$('#dietTable').html(h);$('#dietEmpty').toggle(d.length===0)}
+function renderCheckupTable(){var d=getData('checkupData',defaultCheckups);var h='';d.forEach(function(item,i){var c=item.status==='已完成'?'status-done':item.status==='已逾期'?'status-overdue':'status-pending';h+='<tr><td>'+item.name+'</td><td>'+item.time+'</td><td><span class="'+c+'">'+item.status+'</span> <span class="delete-btn" onclick="deleteCheckup('+i+')">删除</span></td></tr>'});$('#checkupTable').html(h);$('#checkupEmpty').toggle(d.length===0)}
+function toggleForm(f){var el=$('#'+f);var v=el.is(':visible');$('.add-form').hide();if(!v){el.slideDown(200);el.find('input').val('');el.find('select').prop('selectedIndex',0)}}
+function saveMedication(){var n=$('#med_name').val().trim(),t=$('#med_time').val().trim(),d=$('#med_dosage').val().trim();if(!n||!t||!d){alert('请填写完整的用药信息');return}var arr=getData('medicationData',defaultMedications);arr.push({name:n,time:t,dosage:d});setData('medicationData',arr);renderMedicationTable();toggleForm('medicationForm')}
+function saveExercise(){var n=$('#exe_name').val().trim(),d=$('#exe_duration').val().trim(),f=$('#exe_frequency').val().trim();if(!n||!d||!f){alert('请填写完整的运动信息');return}var arr=getData('exerciseData',defaultExercises);arr.push({name:n,duration:d,frequency:f});setData('exerciseData',arr);renderExerciseTable();toggleForm('exerciseForm')}
+function saveDiet(){var m=$('#diet_meal').val().trim(),f=$('#diet_food').val().trim(),n=$('#diet_note').val().trim();if(!m||!f||!n){alert('请填写完整的饮食信息');return}var arr=getData('dietData',defaultDiets);arr.push({meal:m,food:f,note:n});setData('dietData',arr);renderDietTable();toggleForm('dietForm')}
+function saveCheckup(){var n=$('#ck_name').val().trim(),t=$('#ck_time').val().trim(),s=$('#ck_status').val();if(!n||!t){alert('请填写完整的复查信息');return}var arr=getData('checkupData',defaultCheckups);arr.push({name:n,time:t,status:s});setData('checkupData',arr);renderCheckupTable();toggleForm('checkupForm')}
+function deleteMedication(i){if(!confirm('确定删除该用药提醒？'))return;var d=getData('medicationData',defaultMedications);d.splice(i,1);setData('medicationData',d);renderMedicationTable()}
+function deleteExercise(i){if(!confirm('确定删除该运动计划？'))return;var d=getData('exerciseData',defaultExercises);d.splice(i,1);setData('exerciseData',d);renderExerciseTable()}
+function deleteDiet(i){if(!confirm('确定删除该饮食指导？'))return;var d=getData('dietData',defaultDiets);d.splice(i,1);setData('dietData',d);renderDietTable()}
+function deleteCheckup(i){if(!confirm('确定删除该复查提醒？'))return;var d=getData('checkupData',defaultCheckups);d.splice(i,1);setData('checkupData',d);renderCheckupTable()}
+$(function(){var userId=localStorage.getItem('userId');if(!userId){if(confirm('请先登录后再使用健康干预功能')){window.location.href='login.html'}}$('.tab-menu li').click(function(){var type=$(this).data('type');$('.tab-menu li').removeClass('active');$(this).addClass('active');$('.tab-content .item').hide();$('#'+type+'Content').show()});renderMedicationTable();renderExerciseTable();renderDietTable();renderCheckupTable()});
+</script>
+</body>
+</html>

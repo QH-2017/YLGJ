@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>健康评估 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-risk.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">健康评估</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    
+    <!-- 健康评估选项 -->
+    <div class="bg-link">
+        <div class="risk-item item-one" onclick="startAssessment('basic')">
+            <div class="icon-text">
+                <i class="icon-baseinfo"></i>
+                <span>基础信息评估</span>
+                <span style="font-size: 12px; margin-top: 5px;">了解您的基本健康状况</span>
+            </div>
+        </div>
+        
+        <div class="risk-item item-two" onclick="startAssessment('family')">
+            <div class="icon-text">
+                <i class="icon-family"></i>
+                <span>家族病史评估</span>
+                <span style="font-size: 12px; margin-top: 5px;">评估遗传健康风险</span>
+            </div>
+        </div>
+        
+        <div class="risk-item item-three" onclick="startAssessment('lifestyle')">
+            <div class="icon-text">
+                <i class="icon-person"></i>
+                <span>生活方式评估</span>
+                <span style="font-size: 12px; margin-top: 5px;">评估生活习惯健康度</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 评估历史记录 -->
+    <div class="bg-link" style="margin-top: 10px;">
+        <h3 style="font-size: 16px; color: #333; margin-bottom: 15px;">评估历史</h3>
+        <div class="risk-item" style="background-color: #f8f9fa; height: auto; padding: 15px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 5px;">基础信息评估</h4>
+                    <p style="font-size: 12px; color: #666;">评估时间：2026-07-01</p>
+                </div>
+                <div style="text-align: right;">
+                    <span style="background-color: #4caf50; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 12px;">健康</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="risk-item" style="background-color: #f8f9fa; height: auto; padding: 15px; border-radius: 8px; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 5px;">家族病史评估</h4>
+                    <p style="font-size: 12px; color: #666;">评估时间：2026-06-15</p>
+                </div>
+                <div style="text-align: right;">
+                    <span style="background-color: #ff9800; color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 12px;">注意</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function startAssessment(type) {
+    var assessmentNames = {
+        'basic': '基础信息评估',
+        'family': '家族病史评估',
+        'lifestyle': '生活方式评估'
+    };
+    
+    if (confirm('确定要开始' + assessmentNames[type] + '吗？')) {
+        // 跳转到对应的评估问卷页面
+        window.location.href = 'health-riskQuestion.html?type=' + type;
+    }
+}
+
+$(function() {
+    // 检查登录状态
+    var userId = localStorage.getItem('userId');
+    if (!userId) {
+        // 未登录，提示用户
+        if (confirm('请先登录后再进行健康评估')) {
+            window.location.href = 'login.html';
+        }
+    }
+});
+</script>
+</body>
+</html>
