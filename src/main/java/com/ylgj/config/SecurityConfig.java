@@ -41,12 +41,18 @@ public class SecurityConfig {
     /** 匿名放行接口（白名单） */
     private static final String[] PERMIT_ALL_URLS = {
             // 认证相关
-            "/user/login", "/user/register",
+            "/user/login", "/user/register", "/user/changePassword",
             // AI 健康助手（移动端匿名使用）
             "/ai/**",
-            // 移动端匿名业务接口（套餐浏览、预约提交、按手机号查报告）
+            // 移动端套餐/检查组/检查项浏览（只读）
             "/setmeal/findAll", "/setmeal/findById/**",
-            "/order/submit", "/order/findByPhone",
+            "/checkgroup/findAll", "/checkgroup/findById/**",
+            "/checkitem/findAll", "/checkitem/findById/**",
+            "/checkgroup-checkitem/**",
+            // 移动端订单（匿名业务：预约提交、按手机号查报告、订单详情/列表/取消）
+            "/order/submit", "/order/findByPhone", "/order/findById/**",
+            "/order/findAll", "/order/cancel",
+            // 移动端会员查询
             "/member/findPage",
             // 报表导出下载
             "/report/export**",
