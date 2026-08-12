@@ -175,15 +175,17 @@ public class UserController {
     }
 
     /**
-     * 更新用户信息
+     * 更新用户信息（密码留空则不修改原密码）
      */
     @PostMapping("/update")
     public Result update(@RequestBody User user) {
         if (user.getId() == null) {
             return new Result(false, "用户ID不能为空");
         }
-        // 若更新密码字段，则加密存储
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+        // 密码留空则不更新密码（updateById 忽略 null 字段，避免覆盖原密码）
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(null);
+        } else {
             user.setPassword(userService.encodePassword(user.getPassword()));
         }
         try {

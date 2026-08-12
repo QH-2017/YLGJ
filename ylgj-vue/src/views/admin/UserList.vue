@@ -47,7 +47,9 @@
         <el-table-column label="操作" width="160" align="center" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link size="small" @click="openEditDialog(row)">编辑</el-button>
-            <el-button type="warning" link size="small" @click="toggleStation(row)">停用</el-button>
+            <el-button :type="row.station === '1' ? 'warning' : 'success'" link size="small" @click="toggleStation(row)">
+              {{ row.station === '1' ? '停用' : '启用' }}
+            </el-button>
             <el-popconfirm title="确定删除此用户？" @confirm="handleDelete(row.id!)">
               <template #reference>
                 <el-button type="danger" link size="small">删除</el-button>
@@ -104,7 +106,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { findAllUsers, addUser } from '@/api/user'
+import { findAllUsers, addUser, updateUser, deleteUser } from '@/api/user'
 import { ElMessage } from 'element-plus'
 import type { User } from '@/types/models'
 
@@ -163,20 +165,44 @@ async function handleSave() {
   const valid = await formRef.value?.validate().catch(() => false)
   if (!valid) return
   if (isEdit.value) {
-    ElMessage.warning('编辑功能需要通过后端 API 实现')
+    const payload: User = { ...form.value }
+    // 密码留空则不修改密码
+    if (!payload.password) delete payload.password
+    try {
+      const res = await updateUser(payload)
+      if (res.flag) { ElMessage.success('更新成功'); dialogVisible.value = false; loadUsers() }
+      else ElMessage.error(res.message || '更新失败')
+    } catch (e) { /* 拦截器已提示 */ }
   } else {
-    const res = await addUser(form.value)
-    if (res.flag) { ElMessage.success('新增成功'); dialogVisible.value = false; loadUsers() }
-    else ElMessage.error(res.message || '新增失败')
+    try {
+      const res = await addUser(form.value)
+      if (res.flag) { ElMessage.success('新增成功'); dialogVisible.value = false; loadUsers() }
+      else ElMessage.error(res.message || '新增失败')
+    } catch (e) { /* 拦截器已提示 */ }
   }
 }
 
-function toggleStation(row: User) {
-  ElMessage.info('账号状态切换（演示功能）')
+/** 账号状态切换：正常(1) <-> 停用(0) */
+async function toggleStation(row: User) {
+  const target = row.station === '1' ? '0' : '1'
+  const action = target === '0' ? '停用' : '启用'
+  try {
+    const res = await updateUser({ id: row.id, station: target })
+    if (res.flag) {
+      ElMessage.success(`账号已${action}`)
+      loadUsers()
+    } else {
+      ElMessage.error(res.message || `${action}失败`)
+    }
+  } catch (e) { /* 拦截器已提示 */ }
 }
 
-function handleDelete(id: number) {
-  ElMessage.info('删除功能需要通过后端 API 实现')
+async function handleDelete(id: number) {
+  try {
+    const res = await deleteUser(id)
+    if (res.flag) { ElMessage.success('删除成功'); loadUsers() }
+    else ElMessage.error(res.message || '删除失败')
+  } catch (e) { /* 拦截器已提示 */ }
 }
 
 onMounted(loadUsers)
