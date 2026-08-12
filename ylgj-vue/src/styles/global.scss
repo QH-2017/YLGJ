@@ -1,0 +1,223 @@
+// 医疗管家 - 全局样式 v2.0
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: #334155;
+  background: #f0f4f8;
+  -webkit-font-smoothing: antialiased;
+}
+
+// ==================== 全局滚动条 ====================
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  &:hover { background: #94a3b8; }
+}
+
+// ==================== 通用管理后台卡片 ====================
+.admin-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.25s;
+
+  &:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// ==================== 统计卡片（4列网格） ====================
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .stat-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .stat-info {
+      h4 { font-size: 13px; color: #94a3b8; margin: 0 0 4px; font-weight: 500; }
+      .num { font-size: 26px; font-weight: 700; color: #1e293b; line-height: 1.2; }
+    }
+  }
+}
+
+// ==================== 搜索工具栏 ====================
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .el-input { width: 240px; }
+}
+
+// ==================== Element Plus 全局覆盖 ====================
+.el-menu { border-right: none !important; }
+
+.el-table {
+  --el-table-border-color: #f1f5f9;
+  --el-table-header-bg-color: #f8fafc;
+  --el-table-row-hover-bg-color: #f8fafc;
+
+  th.el-table__cell {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 12px;
+  }
+}
+
+.el-button--primary {
+  --el-button-bg-color: #14b8a6;
+  --el-button-border-color: #14b8a6;
+  --el-button-hover-bg-color: #0d9488;
+  --el-button-hover-border-color: #0d9488;
+  --el-button-active-bg-color: #0f766e;
+}
+
+.el-pagination {
+  --el-pagination-hover-color: #14b8a6;
+}
+
+.el-tag {
+  border-radius: 6px;
+}
+
+// ==================== 移动端样式 ====================
+.mobile-layout {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f5f5f5;
+  position: relative;
+  padding-bottom: 60px;
+
+  .mobile-header {
+    background: linear-gradient(135deg, #2E8B57, #1e6b3e);
+    color: #fff;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .back-btn {
+      cursor: pointer;
+      font-size: 18px;
+      width: 24px;
+    }
+    .title { font-size: 17px; font-weight: 500; }
+  }
+
+  .mobile-content {
+    padding: 12px 16px;
+  }
+
+  .tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 55px;
+    background: #fff;
+    display: flex;
+    border-top: 1px solid #f1f5f9;
+    z-index: 100;
+    box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.04);
+
+    .tab-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 11px;
+      text-decoration: none;
+      gap: 2px;
+      transition: color 0.2s;
+
+      .el-icon { font-size: 20px; }
+      &.active { color: #2E8B57; font-weight: 600; }
+    }
+  }
+}
+
+// 移动端卡片
+.m-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+// ==================== 页面工具栏（新模块用） ====================
+.page-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+// ==================== CSS 变量 ====================
+:root {
+  --primary: #14b8a6;
+  --primary-dark: #0d9488;
+  --primary-light: #5eead4;
+  --sidebar-bg: #0a1628;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #10b981;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --bg: #f0f4f8;
+  --white: #ffffff;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+}
