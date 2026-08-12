@@ -1,0 +1,12 @@
+# 构建阶段不需要的目录
+target
+node_modules
+dist
+.git
+.idea
+.vscode
+*.log
+ppt_screenshots
+template_unpacked
+unpacked_docx
+uploads

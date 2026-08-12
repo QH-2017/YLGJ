@@ -1,0 +1,71 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### Node / 前端 ###
+node_modules/
+dist/
+*.local
+
+### 环境变量与密钥（禁止入库）###
+.env
+*.pem
+*.key
+*.jks
+
+### 运行时上传文件 ###
+uploads/
+
+### 日志 ###
+*.log
+logs/
+
+### Windows ###
+Thumbs.db
+
+### Python 虚拟环境 ###
+.venv/
+venv/
+
+### 文档解包/临时目录 ###
+template_unpacked/
+unpacked_docx/
+
+### 本机服务辅助文件 ###
+query
+stop
