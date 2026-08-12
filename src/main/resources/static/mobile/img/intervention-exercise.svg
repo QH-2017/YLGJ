@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8F5E9"/>
+      <stop offset="100%" stop-color="#C8E6C9"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="160" rx="12" fill="url(#bg)"/>
+  <!-- 时钟图标 -->
+  <circle cx="75" cy="80" r="45" fill="rgba(76,175,80,0.1)"/>
+  <circle cx="75" cy="78" r="22" fill="none" stroke="#4CAF50" stroke-width="4"/>
+  <circle cx="75" cy="78" r="3" fill="#4CAF50"/>
+  <line x1="75" y1="78" x2="75" y2="62" stroke="#4CAF50" stroke-width="3" stroke-linecap="round"/>
+  <line x1="75" y1="78" x2="88" y2="78" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- 波浪线 -->
+  <path d="M58 118 Q67 106 75 118 Q83 106 92 118" fill="none" stroke="#66BB6A" stroke-width="2.5"/>
+  <!-- 右侧内容 -->
+  <text x="230" y="55" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="22" font-weight="bold" fill="#2E7D32">🏃 运动计划</text>
+  <text x="230" y="80" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="13" fill="#66BB6A">科学运动，强身健体</text>
+  <rect x="140" y="100" width="180" height="28" rx="14" fill="#4CAF50" opacity="0.9"/>
+  <text x="230" y="119" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="11" fill="white">坚持锻炼 · 循序渐进 · 量力而行</text>
+</svg>

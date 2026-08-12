@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <link rel="icon" href="../img/icon01.png">
+    <title>报告查询 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-login.css" />
+    <script>var API_BASE_URL = window.location.origin;</script>
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+    <script src="../plugins/vue/vue.js"></script>
+    <script src="../plugins/vue/axios-0.18.0.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .search-box { background: #fff; padding: 16px; margin-bottom: 10px; }
+        .search-row { display: flex; gap: 10px; }
+        .search-input { flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
+        .search-input:focus { border-color: #26C6DA; }
+        .search-btn { padding: 10px 18px; background: #26C6DA; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; white-space: nowrap; }
+        .search-btn:disabled { opacity: 0.5; }
+        .search-tip { font-size: 12px; color: #999; margin-top: 8px; }
+        .report-card { background: #fff; margin: 0 16px 10px; border-radius: 10px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; }
+        .report-card:active { background: #f9f9f9; }
+        .report-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .report-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0; }
+        .report-avatar.done { background: #e8f5e9; }
+        .report-avatar.pending { background: #fff3e0; }
+        .report-avatar.cancelled { background: #ffebee; }
+        .report-info { flex: 1; min-width: 0; }
+        .report-info .name { font-size: 16px; font-weight: bold; color: #333; }
+        .report-info .phone { font-size: 12px; color: #999; margin-top: 2px; }
+        .report-info .setmeal { font-size: 13px; color: #666; margin-top: 4px; }
+        .report-status { text-align: right; flex-shrink: 0; }
+        .report-status .status { font-size: 12px; font-weight: bold; padding: 3px 10px; border-radius: 10px; }
+        .status-done { color: #4CAF50; background: #e8f5e9; }
+        .status-pending { color: #FF9800; background: #fff3e0; }
+        .status-cancelled { color: #f44336; background: #ffebee; }
+        .report-date { font-size: 11px; color: #bbb; margin-top: 6px; }
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state .text { color: #999; font-size: 14px; }
+        .empty-state .sub { color: #ccc; font-size: 12px; margin-top: 6px; }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">报告查询</span>
+        <span class="f-right"></span>
+    </div>
+    <div class="contentBox">
+        <!-- 搜索区域 -->
+        <div class="search-box">
+            <div class="search-row">
+                <input class="search-input" v-model="keyword" @keydown.enter="search" placeholder="输入手机号尾号4位查询" maxlength="4">
+                <button class="search-btn" @click="search" :disabled="loading || !keyword.trim()">查询</button>
+            </div>
+            <p class="search-tip">💡 输入手机号后4位进行模糊查询，留空则查询全部</p>
+        </div>
+
+        <!-- 加载中 -->
+        <div v-if="loading" style="text-align:center;padding:40px;color:#999;">查询中...</div>
+
+        <!-- 报告列表 -->
+        <div v-else>
+            <div v-if="reports.length > 0">
+                <div style="padding:8px 16px;font-size:12px;color:#999;">共 {{reports.length}} 条体检报告</div>
+                <div v-for="r in reports" :key="r.id" class="report-card" @click="viewDetail(r)">
+                    <div class="report-header">
+                        <div class="report-avatar" :class="r.orderStatus === '已到诊' ? 'done' : r.orderStatus === '已取消' ? 'cancelled' : 'pending'">
+                            {{r.orderStatus === '已到诊' ? '✅' : r.orderStatus === '已取消' ? '❌' : '📋'}}
+                        </div>
+                        <div class="report-info">
+                            <div class="name">{{r.memberName}}</div>
+                            <div class="phone">📱 {{maskPhone(r.phone)}}</div>
+                            <div class="setmeal">📦 {{r.setmealName}}</div>
+                        </div>
+                        <div class="report-status">
+                            <span class="status" :class="r.orderStatus === '已到诊' ? 'status-done' : r.orderStatus === '已取消' ? 'status-cancelled' : 'status-pending'">
+                                {{r.orderStatus}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="report-date">📅 预约日期：{{r.orderDate}} · {{r.orderType}}</div>
+                </div>
+            </div>
+
+            <!-- 空状态 -->
+            <div v-if="searched && reports.length === 0" class="empty-state">
+                <div class="icon">📭</div>
+                <div class="text">未找到匹配的体检报告</div>
+                <div class="sub">请确认手机号后4位是否正确</div>
+            </div>
+            <div v-if="!searched && reports.length === 0" class="empty-state">
+                <div class="icon">🔍</div>
+                <div class="text">输入手机号后4位查询体检报告</div>
+                <div class="sub">也可留空查看全部记录</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+axios.defaults.baseURL = API_BASE_URL;
+new Vue({
+    el: '#app',
+    data: { keyword: '', reports: [], loading: false, searched: false },
+    mounted: function() {
+        // 自动加载全部记录
+        this.loadAll();
+    },
+    methods: {
+        loadAll: function() {
+            var self = this;
+            self.loading = true;
+            axios.get('/order/findAll').then(function(res) {
+                if (res.data.flag && res.data.data) {
+                    self.reports = res.data.data.map(function(o) {
+                        return {
+                            id: o.id,
+                            memberName: o.member ? o.member.name : '未知',
+                            phone: o.member ? o.member.phoneNumber : '',
+                            setmealName: o.setmeal ? o.setmeal.name : '未知套餐',
+                            orderDate: o.orderDate || '',
+                            orderType: o.orderType || '',
+                            orderStatus: o.orderStatus || '未到诊',
+                            setmealId: o.setmealId
+                        };
+                    });
+                    self.searched = true;
+                }
+                self.loading = false;
+            }).catch(function() { self.loading = false; });
+        },
+        search: function() {
+            var self = this;
+            var kw = this.keyword.trim();
+            if (!kw) { this.loadAll(); return; }
+            self.loading = true;
+            self.searched = true;
+            // 先加载全部，再前端模糊过滤
+            axios.get('/order/findAll').then(function(res) {
+                if (res.data.flag && res.data.data) {
+                    self.reports = res.data.data.filter(function(o) {
+                        var phone = o.member && o.member.phoneNumber ? o.member.phoneNumber : '';
+                        var name = o.member && o.member.name ? o.member.name : '';
+                        return phone.indexOf(kw) >= 0 || name.indexOf(kw) >= 0;
+                    }).map(function(o) {
+                        return {
+                            id: o.id,
+                            memberName: o.member ? o.member.name : '未知',
+                            phone: o.member ? o.member.phoneNumber : '',
+                            setmealName: o.setmeal ? o.setmeal.name : '未知套餐',
+                            orderDate: o.orderDate || '',
+                            orderType: o.orderType || '',
+                            orderStatus: o.orderStatus || '未到诊',
+                            setmealId: o.setmealId
+                        };
+                    });
+                }
+                self.loading = false;
+            }).catch(function() { self.loading = false; });
+        },
+        maskPhone: function(phone) {
+            if (!phone || phone.length < 4) return phone;
+            return phone.substring(0, 3) + '****' + phone.substring(phone.length - 4);
+        },
+        viewDetail: function(r) {
+            window.location.href = 'checkrecord_detail.html?id=' + r.id 
+                + '&name=' + encodeURIComponent(r.memberName)
+                + '&setmeal=' + encodeURIComponent(r.setmealName)
+                + '&date=' + encodeURIComponent(r.orderDate)
+                + '&status=' + encodeURIComponent(r.orderStatus);
+        }
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>个人中心 - 医疗管家</title>
+    <meta name="description" content="医疗管家">
+    <link rel="stylesheet" href="/static/plugins/elementui/index.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body { background: #f0f2f5; }
+        .profile-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 24px;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #26C6DA, #00ACC1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #fff;
+            margin-right: 24px;
+            flex-shrink: 0;
+        }
+        .profile-info h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .profile-info .role-tag {
+            display: inline-block;
+            padding: 2px 12px;
+            background: #e6f7ff;
+            color: #1890ff;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .profile-info .login-time {
+            color: #999;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+        .stat-row {
+            display: flex;
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .stat-item {
+            flex: 1;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-item .num {
+            font-size: 28px;
+            font-weight: bold;
+            color: #26C6DA;
+        }
+        .stat-item .label {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 16px;
+            padding-left: 10px;
+            border-left: 3px solid #26C6DA;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .info-item {
+            display: flex;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-radius: 6px;
+        }
+        .info-item .info-label {
+            width: 100px;
+            color: #999;
+            flex-shrink: 0;
+        }
+        .info-item .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="hold-transition">
+<div id="app">
+    <div class="content-header">
+        <h1>个人中心<small>个人信息管理</small></h1>
+        <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{path: '/main.html'}">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>个人中心</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <section class="content">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fa fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h2>{{ username }}</h2>
+                    <span class="role-tag"><i class="fa fa-shield"></i> 系统管理员</span>
+                    <p class="login-time"><i class="fa fa-clock-o"></i> 本次登录时间：{{ loginTime }}</p>
+                </div>
+            </div>
+
+            <div class="section-title">系统使用统计</div>
+            <div class="stat-row">
+                <div class="stat-item">
+                    <div class="num">{{ stats.totalMembers }}</div>
+                    <div class="label">管理会员数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num">{{ stats.totalOrders }}</div>
+                    <div class="label">处理预约数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num">{{ stats.todayOrders }}</div>
+                    <div class="label">今日新增预约</div>
+                </div>
+                <div class="stat-item">
+                    <div class="num">{{ stats.totalSetmeals }}</div>
+                    <div class="label">管理套餐数</div>
+                </div>
+            </div>
+
+            <div style="margin-top:28px;">
+                <div class="section-title">基本信息</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">用户名</span>
+                        <span class="info-value">{{ username }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">角色</span>
+                        <span class="info-value">系统管理员</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">系统版本</span>
+                        <span class="info-value">医疗管家 v1.0.0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">登录方式</span>
+                        <span class="info-value">账号密码登录</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:28px; text-align:right;">
+                <el-button type="warning" icon="fa fa-key" @click="showPwdDialog = true">修改密码</el-button>
+                <el-button type="primary" icon="fa fa-home" @click="goHome">返回首页</el-button>
+                <el-button type="danger" icon="fa fa-sign-out" @click="logout">退出登录</el-button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 修改密码弹窗 -->
+    <el-dialog title="修改密码" :visible.sync="showPwdDialog" width="400px">
+        <el-form :model="pwdForm" label-width="80px">
+            <el-form-item label="原密码"><el-input v-model="pwdForm.oldPassword" type="password" placeholder="请输入原密码"></el-input></el-form-item>
+            <el-form-item label="新密码"><el-input v-model="pwdForm.newPassword" type="password" placeholder="请输入新密码（至少6位）"></el-input></el-form-item>
+            <el-form-item label="确认密码"><el-input v-model="pwdForm.confirmPassword" type="password" placeholder="请再次输入新密码"></el-input></el-form-item>
+        </el-form>
+        <span slot="footer">
+            <el-button @click="showPwdDialog = false">取消</el-button>
+            <el-button type="primary" @click="changePassword">确认修改</el-button>
+        </span>
+    </el-dialog>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/vue.js"></script>
+<script src="/static/plugins/elementui/index.js"></script>
+<script src="/static/js/axios-0.18.0.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                username: localStorage.getItem('username') || '管理员',
+                loginTime: '',
+                showPwdDialog: false,
+                pwdForm: { oldPassword: '', newPassword: '', confirmPassword: '' },
+                stats: {
+                    totalMembers: 0,
+                    totalOrders: 0,
+                    todayOrders: 0,
+                    totalSetmeals: 0
+                }
+            }
+        },
+        created: function() {
+            this.loginTime = new Date().toLocaleString('zh-CN');
+            this.loadStats();
+        },
+        methods: {
+            loadStats: function() {
+                var self = this;
+                // 加载会员数
+                axios.get('/member/findPage', {
+                    params: { currentPage: 1, pageSize: 1 }
+                }).then(function(res) {
+                    if (res.data && res.data.total !== undefined) {
+                        self.stats.totalMembers = res.data.total;
+                    }
+                }).catch(function() {});
+                // 加载订单数
+                axios.get('/order/findAll').then(function(res) {
+                    if (res.data && res.data.data) {
+                        self.stats.totalOrders = res.data.data.length;
+                        var today = new Date().toISOString().slice(0, 10);
+                        self.stats.todayOrders = res.data.data.filter(function(o) {
+                            return o.orderDate === today;
+                        }).length;
+                    }
+                }).catch(function() {});
+                // 加载套餐数
+                axios.get('/setmeal/findAll').then(function(res) {
+                    if (res.data && res.data.data) {
+                        self.stats.totalSetmeals = res.data.data.length;
+                    }
+                }).catch(function() {});
+            },
+            goHome: function() {
+                window.location.href = 'main.html';
+            },
+            changePassword: function() {
+                var f = this.pwdForm;
+                if (!f.oldPassword) { this.$message.error('请输入原密码'); return; }
+                if (!f.newPassword || f.newPassword.length < 6) { this.$message.error('新密码至少6位'); return; }
+                if (f.newPassword !== f.confirmPassword) { this.$message.error('两次密码不一致'); return; }
+                var self = this;
+                axios.post('/user/changePassword', {
+                    username: self.username,
+                    oldPassword: f.oldPassword,
+                    newPassword: f.newPassword
+                }).then(function(res) {
+                    if (res.data.flag) {
+                        self.$message.success('密码修改成功，请重新登录');
+                        self.showPwdDialog = false;
+                        self.pwdForm = { oldPassword: '', newPassword: '', confirmPassword: '' };
+                        setTimeout(function() {
+                            localStorage.removeItem('username');
+                            localStorage.removeItem('medical_admin_user');
+                            window.location.href = 'login.html';
+                        }, 1500);
+                    } else {
+                        self.$message.error(res.data.message || '修改失败');
+                    }
+                }).catch(function() { self.$message.error('网络错误'); });
+            },
+            logout: function() {
+                var self = this;
+                this.$confirm('确定要退出登录吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(function() {
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('medical_admin_user');
+                    window.location.href = 'login.html';
+                }).catch(function() {});
+            }
+        }
+    });
+</script>
+</body>
+</html>

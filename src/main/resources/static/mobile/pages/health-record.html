@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <link rel="icon" href="../img/icon01.png">
+    <title>健康档案 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-login.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+    <script src="../plugins/vue/vue.js"></script>
+    <script src="../plugins/vue/axios-0.18.0.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .card { background: #fff; margin: 10px 16px; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .section-title { font-size: 15px; font-weight: bold; color: #333; margin-bottom: 12px; padding-left: 10px; border-left: 3px solid #26C6DA; }
+        .stat-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .stat-box { flex: 1; text-align: center; padding: 14px 8px; background: #f8fffe; border-radius: 8px; border: 1px solid #e8f5e9; }
+        .stat-box .num { font-size: 24px; font-weight: bold; color: #26C6DA; }
+        .stat-box .label { font-size: 11px; color: #999; margin-top: 4px; }
+        .menu-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item .icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0; }
+        .menu-item .text { flex: 1; }
+        .menu-item .text .title { font-size: 14px; color: #333; }
+        .menu-item .text .desc { font-size: 12px; color: #999; margin-top: 2px; }
+        .menu-item .count { background: #26C6DA; color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+        .empty { text-align: center; padding: 30px; color: #ccc; font-size: 13px; }
+        .list-item { background: #fff; padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #f0f0f0; }
+        .list-item .item-title { font-size: 14px; font-weight: bold; color: #333; margin-bottom: 4px; }
+        .list-item .item-desc { font-size: 12px; color: #999; }
+        .list-item .item-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+        .list-item .item-actions span { font-size: 12px; padding: 4px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-edit { color: #2196F3; background: #e3f2fd; }
+        .btn-del { color: #f44336; background: #ffebee; }
+        .modal-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: flex-end; }
+        .modal-content { background: white; width: 100%; border-radius: 16px 16px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .modal-title { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-group textarea { height: 80px; resize: none; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
+        .modal-btns button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+        .btn-cancel { background: #f5f5f5; color: #666; }
+        .btn-confirm { background: #26C6DA; color: white; }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">健康档案</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    <div class="contentBox">
+        <div v-if="!isLoggedIn" class="empty" style="padding: 60px 20px;">
+            <p style="font-size: 48px; margin-bottom: 12px;">🔒</p>
+            <p>请先登录后查看健康档案</p>
+            <a href="login.html" style="display: inline-block; margin-top: 12px; padding: 8px 24px; background: #26C6DA; color: white; border-radius: 20px; text-decoration: none;">去登录</a>
+        </div>
+        <template v-else>
+            <div class="card">
+                <div class="stat-row">
+                    <div class="stat-box"><div class="num">{{records.basic.length}}</div><div class="label">基本信息</div></div>
+                    <div class="stat-box"><div class="num">{{records.case.length}}</div><div class="label">病史记录</div></div>
+                    <div class="stat-box"><div class="num">{{records.allergy.length}}</div><div class="label">过敏信息</div></div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-box"><div class="num">{{records.family.length}}</div><div class="label">家族病史</div></div>
+                    <div class="stat-box"><div class="num">{{records.medication.length}}</div><div class="label">用药记录</div></div>
+                    <div class="stat-box"><div class="num">{{records.checkup.length}}</div><div class="label">体检记录</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="menu-item" v-for="(item, key) in menuItems" :key="key" @click="openList(key)">
+                    <div class="icon" :style="{background: item.bg}">{{item.icon}}</div>
+                    <div class="text"><div class="title">{{item.title}}</div><div class="desc">{{item.desc}}</div></div>
+                    <span class="count" v-if="records[key].length > 0">{{records[key].length}}条</span>
+                    <span style="color:#ccc;font-size:14px;">›</span>
+                </div>
+            </div>
+            <!-- 列表弹窗 -->
+            <div class="modal-mask" v-if="showList" @click.self="showList=false">
+                <div class="modal-content">
+                    <div class="modal-title">{{menuItems[currentType].title}}</div>
+                    <div v-if="records[currentType].length===0" class="empty">暂无记录</div>
+                    <div v-for="(item,index) in records[currentType]" :key="index" class="list-item">
+                        <div class="item-title">{{item.title}}</div>
+                        <div class="item-desc">{{item.content}}</div>
+                        <div class="item-desc" v-if="item.date" style="margin-top:2px;">📅 {{item.date}}</div>
+                        <div class="item-actions">
+                            <span class="btn-edit" @click="openEdit(currentType,index)">✏️ 编辑</span>
+                            <span class="btn-del" @click="deleteItem(currentType,index)">🗑️ 删除</span>
+                        </div>
+                    </div>
+                    <button @click="openAdd(currentType)" style="width:100%;padding:12px;background:#26C6DA;color:white;border:none;border-radius:8px;font-size:15px;margin-top:12px;cursor:pointer;">
+                        + 添加{{menuItems[currentType].title}}
+                    </button>
+                </div>
+            </div>
+            <!-- 编辑弹窗 -->
+            <div class="modal-mask" v-if="showEdit" @click.self="showEdit=false">
+                <div class="modal-content">
+                    <div class="modal-title">{{editIndex>=0?'编辑':'添加'}}{{menuItems[editType].title}}</div>
+                    <div class="form-group"><label>标题</label><input v-model="editForm.title" placeholder="请输入标题"></div>
+                    <div class="form-group"><label>详细内容</label><textarea v-model="editForm.content" placeholder="请输入详细内容"></textarea></div>
+                    <div class="form-group"><label>日期</label><input v-model="editForm.date" type="date"></div>
+                    <div class="modal-btns">
+                        <button class="btn-cancel" @click="showEdit=false">取消</button>
+                        <button class="btn-confirm" @click="saveItem">保存</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+<script>
+    var sk = 'health_records_';
+    function getKey() { return sk + (localStorage.getItem('userId') || 'guest'); }
+    function loadR() {
+        var d = localStorage.getItem(getKey());
+        if (d) { try { return JSON.parse(d); } catch(e) {} }
+        // 根据登录用户生成个性化示例数据
+        var userId = localStorage.getItem('userId') || 'guest';
+        var userName = localStorage.getItem('userName') || '用户';
+        // 每个用户有不同的示例数据模板
+        var profiles = {
+            'admin': {
+                basic: [
+                    { title: '身高体重', content: '身高178cm，体重75kg，BMI 23.7，体型正常', date: '2026-04-10' },
+                    { title: '血型', content: 'A型血，Rh阳性', date: '2025-01-15' },
+                    { title: '视力', content: '左眼4.8，右眼5.0，无色盲色弱', date: '2026-04-10' }
+                ],
+                case: [
+                    { title: '急性扁桃体炎', content: '2025年10月因感冒引起扁桃体发炎，口服抗生素治疗一周后痊愈', date: '2025-10-15' },
+                    { title: '腰椎间盘突出', content: '2024年3月确诊腰椎间盘突出（L4/L5），经理疗和康复训练后好转', date: '2024-03-20' }
+                ],
+                allergy: [
+                    { title: '磺胺类药物过敏', content: '服用复方新诺明后出现全身皮疹，停药后缓解', date: '2022-06-10' }
+                ],
+                family: [
+                    { title: '父亲-高血压', content: '父亲58岁确诊高血压，目前服用氨氯地平控制，血压稳定在130/85', date: '2025-06-01' },
+                    { title: '母亲-甲状腺结节', content: '母亲55岁体检发现甲状腺结节（TI-RADS 3类），定期复查中', date: '2025-09-12' }
+                ],
+                medication: [
+                    { title: '布洛芬缓释胶囊', content: '300mg/次，腰痛时服用，每日不超过2次', date: '2026-01-15' }
+                ],
+                checkup: [
+                    { title: '2026年年度体检', content: '各项指标正常，BMI正常范围，建议保持运动习惯', date: '2026-04-10' },
+                    { title: '2025年年度体检', content: '血压128/82偏高临界，血脂正常，肝肾功能正常', date: '2025-04-08' }
+                ]
+            },
+            'zhangsan': {
+                basic: [
+                    { title: '身高体重', content: '身高165cm，体重58kg，BMI 21.3，体型正常', date: '2026-05-20' },
+                    { title: '血型', content: 'O型血，Rh阳性', date: '2024-08-15' }
+                ],
+                case: [
+                    { title: '过敏性鼻炎', content: '春季花粉季节发作，鼻塞、流涕、打喷嚏，使用氯雷他定缓解', date: '2026-03-10' },
+                    { title: '踝关节扭伤', content: '2025年6月运动时右踝关节扭伤，冰敷+石膏固定2周后恢复', date: '2025-06-22' }
+                ],
+                allergy: [
+                    { title: '花粉过敏', content: '春季花粉浓度高时出现过敏性鼻炎症状', date: '2025-03-01' },
+                    { title: '芒果过敏', content: '食用芒果后嘴唇周围出现红疹和瘙痒', date: '2024-07-20' }
+                ],
+                family: [
+                    { title: '父亲-脂肪肝', content: '父亲48岁体检发现轻度脂肪肝，医生建议控制饮食、增加运动', date: '2025-11-05' },
+                    { title: '祖母-骨质疏松', content: '祖母72岁确诊骨质疏松，长期服用钙片和维生素D', date: '2024-09-10' }
+                ],
+                medication: [
+                    { title: '氯雷他定片', content: '10mg/日，春季花粉季节每日服用，预防过敏性鼻炎', date: '2026-03-01' },
+                    { title: '维生素D钙片', content: '每日1片，补充钙质', date: '2026-01-01' }
+                ],
+                checkup: [
+                    { title: '2026年入职体检', content: '血常规正常，肝功能正常，胸部X光未见异常，心电图正常', date: '2026-05-20' },
+                    { title: '2025年年度体检', content: '各项指标基本正常，建议注意颈椎保护', date: '2025-05-18' }
+                ]
+            },
+            'xiaoli': {
+                basic: [
+                    { title: '身高体重', content: '身高160cm，体重52kg，BMI 20.3，体型正常', date: '2026-06-15' },
+                    { title: '血型', content: 'B型血，Rh阳性', date: '2025-03-20' }
+                ],
+                case: [
+                    { title: '痛经', content: '经期前2天痛经明显，口服布洛芬可缓解', date: '2026-04-05' },
+                    { title: '乳腺增生', content: '2025年体检发现双侧乳腺增生（BI-RADS 2类），定期复查', date: '2025-10-15' }
+                ],
+                allergy: [
+                    { title: '花粉过敏', content: '春季花粉过敏，出现鼻塞和皮肤瘙痒', date: '2025-04-01' }
+                ],
+                family: [
+                    { title: '母亲-乳腺增生', content: '母亲45岁确诊乳腺增生，定期复查，目前稳定', date: '2024-12-10' },
+                    { title: '外婆-糖尿病', content: '外婆68岁确诊2型糖尿病，胰岛素治疗中', date: '2023-08-20' }
+                ],
+                medication: [
+                    { title: '布洛芬缓释片', content: '400mg/次，痛经时服用', date: '2026-04-01' }
+                ],
+                checkup: [
+                    { title: '2026年年度体检', content: '血常规正常，甲状腺功能正常，乳腺B超未见明显异常', date: '2026-06-15' },
+                    { title: '2025年年度体检', content: '血红蛋白偏低108g/L，建议适当补充铁剂', date: '2025-06-10' }
+                ]
+            }
+        };
+        // 根据用户ID获取对应的示例数据，没有则使用默认模板
+        var sample = profiles[userId] || {
+            basic: [
+                { title: '身高体重', content: '身高170cm，体重65kg，BMI 22.5，体型正常', date: '2026-03-15' },
+                { title: '血型', content: 'AB型血，Rh阳性', date: '2025-06-10' }
+            ],
+            case: [
+                { title: '急性肠胃炎', content: '2025年8月因饮食不当引起急性肠胃炎，住院3天后痊愈', date: '2025-08-20' },
+                { title: '阑尾切除术', content: '2023年5月行腹腔镜阑尾切除术，术后恢复良好', date: '2023-05-12' }
+            ],
+            allergy: [
+                { title: '青霉素过敏', content: '使用青霉素类药物后出现皮疹、瘙痒，严重时可致过敏性休克', date: '2020-03-10' },
+                { title: '海鲜过敏', content: '食用虾蟹后出现皮肤红疹，轻微瘙痒', date: '2024-07-15' }
+            ],
+            family: [
+                { title: '父亲-高血压', content: '父亲55岁确诊高血压，目前服药控制中，血压稳定', date: '2025-01-20' },
+                { title: '母亲-糖尿病', content: '母亲52岁确诊2型糖尿病，口服降糖药治疗中', date: '2024-11-08' },
+                { title: '祖父-冠心病', content: '祖父70岁时确诊冠心病，已行支架植入术', date: '2022-06-15' }
+            ],
+            medication: [
+                { title: '氨氯地平', content: '5mg/日，用于控制血压，每日早晨服用', date: '2026-01-01' },
+                { title: '阿司匹林肠溶片', content: '100mg/日，预防心脑血管疾病，每日早餐后服用', date: '2026-01-01' }
+            ],
+            checkup: [
+                { title: '2026年入职体检', content: '血常规正常，肝功能正常，胸部CT未见异常，心电图正常', date: '2026-03-15' },
+                { title: '2025年年度体检', content: '血压偏高135/90，建议低盐饮食；血脂总胆固醇偏高5.8，建议控制饮食', date: '2025-12-20' },
+                { title: '2024年年度体检', content: '各项指标基本正常，BMI偏高建议适当运动', date: '2024-12-18' }
+            ]
+        };
+        saveR(sample);
+        return sample;
+    }
+    function saveR(r) { localStorage.setItem(getKey(), JSON.stringify(r)); }
+    new Vue({
+        el:'#app',
+        data:{
+            isLoggedIn: !!localStorage.getItem('userId'),
+            records: loadR(),
+            menuItems:{
+                basic:{title:'基本信息',desc:'身高、体重、血型等',icon:'👤',bg:'#e3f2fd'},
+                case:{title:'病史记录',desc:'过往疾病与手术史',icon:'🏥',bg:'#fce4ec'},
+                allergy:{title:'过敏信息',desc:'药物、食物过敏记录',icon:'⚠️',bg:'#fff3e0'},
+                family:{title:'家族病史',desc:'直系亲属健康状况',icon:'👨‍👩‍👧',bg:'#f3e5f5'},
+                medication:{title:'用药记录',desc:'当前及既往用药',icon:'💊',bg:'#e8f5e9'},
+                checkup:{title:'体检记录',desc:'历次体检结果',icon:'📋',bg:'#e0f7fa'}
+            },
+            showList:false,showEdit:false,currentType:'basic',editType:'basic',editIndex:-1,
+            editForm:{title:'',content:'',date:''}
+        },
+        methods:{
+            openList(t){this.currentType=t;this.showList=true;},
+            openAdd(t){this.editType=t;this.editIndex=-1;this.editForm={title:'',content:'',date:new Date().toISOString().slice(0,10)};this.showEdit=true;},
+            openEdit(t,i){this.editType=t;this.editIndex=i;var it=this.records[t][i];this.editForm={title:it.title,content:it.content,date:it.date||''};this.showEdit=true;},
+            saveItem(){
+                if(!this.editForm.title.trim()){alert('请输入标题');return;}
+                var item={title:this.editForm.title.trim(),content:this.editForm.content.trim(),date:this.editForm.date};
+                if(this.editIndex>=0){this.records[this.editType].splice(this.editIndex,1,item);}
+                else{this.records[this.editType].push(item);}
+                saveR(this.records);this.showEdit=false;
+            },
+            deleteItem(t,i){if(confirm('确定要删除这条记录吗？')){this.records[t].splice(i,1);saveR(this.records);}}
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>医疗管家 - 注册</title>
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="/static/plugins/elementui/index.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome/css/font-awesome.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif; }
+        .register-wrapper {
+            width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #1a6b4a 0%, #2d9b6e 30%, #43b88c 60%, #6ecda8 100%);
+            position: relative; overflow: hidden;
+        }
+        .register-wrapper::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .register-card {
+            width: 460px; background: rgba(255,255,255,0.95); border-radius: 16px;
+            padding: 40px 40px 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            position: relative; z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .register-header { text-align: center; margin-bottom: 32px; }
+        .register-icon { font-size: 48px; color: #2d9b6e; margin-bottom: 12px; }
+        .register-title { font-size: 26px; font-weight: 700; color: #333; letter-spacing: 1px; }
+        .register-subtitle { font-size: 13px; color: #909399; margin-top: 6px; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: #c0c4cc; z-index: 1; }
+        .input-group input {
+            width: 100%; height: 46px; border: 1px solid #dcdfe6; border-radius: 8px;
+            padding: 0 14px 0 40px; font-size: 14px; outline: none; transition: all 0.3s;
+            background: #f5f7fa;
+        }
+        .input-group input:focus { border-color: #2d9b6e; background: #fff; box-shadow: 0 0 0 2px rgba(45,155,110,0.15); }
+        .register-btn {
+            width: 100%; height: 46px; background: linear-gradient(135deg, #1a6b4a, #2d9b6e);
+            color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; letter-spacing: 4px; margin-top: 8px;
+        }
+        .register-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(45,155,110,0.4); }
+        .register-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .register-footer { text-align: center; margin-top: 20px; font-size: 13px; color: #909399; }
+        .register-footer a { color: #2d9b6e; text-decoration: none; font-weight: 500; }
+        .register-footer a:hover { text-decoration: underline; }
+        .form-item { margin-bottom: 18px; }
+        .form-item label { display: block; font-size: 13px; color: #606266; margin-bottom: 6px; font-weight: 500; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-item { flex: 1; }
+        .error-msg { color: #f56c6c; font-size: 12px; margin-top: -12px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="register-wrapper">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="register-icon"><i class="fa fa-heartbeat"></i></div>
+                <div class="register-title">注册新账号</div>
+                <div class="register-subtitle">加入医疗管家，开启健康管理之旅</div>
+            </div>
+            <el-form :model="formData" :rules="rules" ref="registerForm" label-position="top">
+                <div class="form-item">
+                    <label>用户名</label>
+                    <div class="input-group">
+                        <i class="fa fa-user icon"></i>
+                        <el-input v-model="formData.username" placeholder="请输入用户名" prop="username"></el-input>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label>手机号码</label>
+                    <div class="input-group">
+                        <i class="fa fa-phone icon"></i>
+                        <el-input v-model="formData.telephone" placeholder="请输入手机号码" prop="telephone"></el-input>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>设置密码</label>
+                        <div class="input-group">
+                            <i class="fa fa-lock icon"></i>
+                            <el-input v-model="formData.password" type="password" placeholder="请输入密码(至少6位)" prop="password"></el-input>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label>确认密码</label>
+                        <div class="input-group">
+                            <i class="fa fa-lock icon"></i>
+                            <el-input v-model="confirmPassword" type="password" placeholder="请再次输入密码" prop="confirmPassword"></el-input>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>性别</label>
+                        <el-select v-model="formData.gender" placeholder="请选择性别" style="width:100%;">
+                            <el-option label="男" value="1"></el-option>
+                            <el-option label="女" value="2"></el-option>
+                            <el-option label="保密" value="0"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="form-item">
+                        <label>生日</label>
+                        <el-date-picker v-model="formData.birthday" type="date" placeholder="选择生日" style="width:100%;" value-format="yyyy-MM-dd"></el-date-picker>
+                    </div>
+                </div>
+            </el-form>
+            <button class="register-btn" @click="handleRegister" :disabled="loading">
+                {{ loading ? '注册中...' : '立即注册' }}
+            </button>
+            <div class="register-footer">
+                已有账号？<a href="login.html">返回登录</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/vue.js"></script>
+<script src="/static/plugins/elementui/index.js"></script>
+<script src="/static/js/axios-0.18.0.js"></script>
+<script>
+new Vue({
+    el: '#app',
+    data() {
+        var validatePass2 = (rule, value, callback) => {
+            if (value === '') { callback(new Error('请再次输入密码')); }
+            else if (value !== this.formData.password) { callback(new Error('两次输入密码不一致！')); }
+            else { callback(); }
+        };
+        return {
+            formData: { username: '', password: '', telephone: '', gender: '0', birthday: '' },
+            confirmPassword: '',
+            loading: false,
+            rules: {
+                username: [{ required: true, message: '请输入用户名', trigger: 'blur' },
+                    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }],
+                password: [{ required: true, message: '请输入密码', trigger: 'blur' },
+                    { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }],
+                confirmPassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
+                telephone: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }]
+            }
+        };
+    },
+    methods: {
+        handleRegister() {
+            var self = this;
+            this.$refs.registerForm.validate(function(valid) {
+                if (valid) {
+                    self.loading = true;
+                    axios.post('/user/register', self.formData).then(function(resp) {
+                        self.loading = false;
+                        if (resp.data.flag) {
+                            self.$message.success(resp.data.message);
+                            setTimeout(function() { window.location.href = 'login.html'; }, 1500);
+                        } else {
+                            self.$message.error(resp.data.message);
+                        }
+                    }).catch(function() {
+                        self.loading = false;
+                        self.$message.error('网络错误，请稍后重试');
+                    });
+                }
+            });
+        }
+    }
+});
+</script>
+</body>
+</html>

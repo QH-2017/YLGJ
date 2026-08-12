@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E3F2FD"/>
+      <stop offset="100%" stop-color="#BBDEFB"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="160" rx="12" fill="url(#bg)"/>
+  <!-- 药瓶图标 -->
+  <circle cx="75" cy="80" r="45" fill="rgba(33,150,243,0.1)"/>
+  <rect x="62" y="58" width="26" height="44" rx="5" fill="#2196F3"/>
+  <rect x="67" y="64" width="16" height="5" rx="2" fill="white"/>
+  <rect x="72" y="58" width="6" height="16" rx="2" fill="white"/>
+  <!-- 右侧内容 -->
+  <text x="230" y="55" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="22" font-weight="bold" fill="#1565C0">💊 用药提醒</text>
+  <text x="230" y="80" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="13" fill="#64B5F6">记录用药信息，按时服药更健康</text>
+  <rect x="140" y="100" width="180" height="28" rx="14" fill="#2196F3" opacity="0.9"/>
+  <text x="230" y="119" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="11" fill="white">遵医嘱 · 按时服药 · 定期复查</text>
+</svg>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>健康档案详情 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-recordDetail.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center" id="pageTitle">健康档案详情</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    
+    <!-- 详情内容 -->
+    <div class="list-content">
+        <div class="fix-info">
+            <ul id="detailContent">
+                <!-- 动态内容将通过JavaScript加载 -->
+            </ul>
+        </div>
+        
+        <div style="text-align: center; padding: 20px;">
+            <a href="javascript:void(0)" id="editBtn" style="background-color: #038bdf; color: #fff; padding: 12px 40px; border-radius: 20px; text-decoration: none;">编辑信息</a>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    // 获取URL参数中的类型
+    var urlParams = new URLSearchParams(window.location.search);
+    var recordType = urlParams.get('type') || 'basic';
+    
+    // 设置页面标题
+    var typeNames = {
+        'basic': '基本信息',
+        'case': '病史记录',
+        'allergy': '过敏信息',
+        'family': '家族病史',
+        'checkup': '体检记录',
+        'medication': '用药记录'
+    };
+    $('#pageTitle').text(typeNames[recordType] + '详情');
+    
+    // 加载对应类型的详情数据
+    loadRecordDetail(recordType);
+    
+    // 编辑按钮点击事件
+    $('#editBtn').click(function() {
+        editRecord(recordType);
+    });
+});
+
+// 加载记录详情
+function loadRecordDetail(type) {
+    var detailHtml = '';
+    
+    switch(type) {
+        case 'basic':
+            detailHtml = `
+                <li>
+                    <span class="tit">姓名</span>
+                    <span id="name">张三</span>
+                </li>
+                <li>
+                    <span class="tit">性别</span>
+                    <span id="gender">男</span>
+                </li>
+                <li>
+                    <span class="tit">年龄</span>
+                    <span id="age">35岁</span>
+                </li>
+                <li>
+                    <span class="tit">身高</span>
+                    <span id="height">175cm</span>
+                </li>
+                <li>
+                    <span class="tit">体重</span>
+                    <span id="weight">70kg</span>
+                </li>
+                <li>
+                    <span class="tit">血型</span>
+                    <span id="bloodType">A型</span>
+                </li>
+                <li>
+                    <span class="tit">联系电话</span>
+                    <span id="phone">138****8888</span>
+                </li>
+                <li>
+                    <span class="tit">身份证号</span>
+                    <span id="idCard">110***********1234</span>
+                </li>
+            `;
+            break;
+            
+        case 'case':
+            detailHtml = `
+                <li>
+                    <span class="tit">高血压</span>
+                    <span id="hypertension">2020年确诊，目前服药控制</span>
+                </li>
+                <li>
+                    <span class="tit">糖尿病</span>
+                    <span id="diabetes">无</span>
+                </li>
+                <li>
+                    <span class="tit">心脏病</span>
+                    <span id="heartDisease">无</span>
+                </li>
+                <li>
+                    <span class="tit">手术史</span>
+                    <span id="surgery">2018年阑尾炎手术</span>
+                </li>
+                <li>
+                    <span class="tit">住院史</span>
+                    <span id="hospitalization">2018年因阑尾炎住院1周</span>
+                </li>
+            `;
+            break;
+            
+        case 'allergy':
+            detailHtml = `
+                <li>
+                    <span class="tit">药物过敏</span>
+                    <span id="drugAllergy">青霉素过敏</span>
+                </li>
+                <li>
+                    <span class="tit">食物过敏</span>
+                    <span id="foodAllergy">海鲜过敏</span>
+                </li>
+                <li>
+                    <span class="tit">环境过敏</span>
+                    <span id="envAllergy">花粉过敏</span>
+                </li>
+                <li>
+                    <span class="tit">过敏反应</span>
+                    <span id="allergyReaction">皮疹、呼吸困难</span>
+                </li>
+            `;
+            break;
+            
+        case 'family':
+            detailHtml = `
+                <li>
+                    <span class="tit">父亲</span>
+                    <span id="father">高血压、糖尿病</span>
+                </li>
+                <li>
+                    <span class="tit">母亲</span>
+                    <span id="mother">心脏病</span>
+                </li>
+                <li>
+                    <span class="tit">兄弟姐妹</span>
+                    <span id="siblings">健康</span>
+                </li>
+                <li>
+                    <span class="tit">子女</span>
+                    <span id="children">健康</span>
+                </li>
+                <li>
+                    <span class="tit">祖父母</span>
+                    <span id="grandparents">高血压</span>
+                </li>
+            `;
+            break;
+            
+        case 'checkup':
+            detailHtml = `
+                <li>
+                    <span class="tit">最近体检</span>
+                    <span id="lastCheckup">2026-06-15</span>
+                </li>
+                <li>
+                    <span class="tit">血压</span>
+                    <span id="bloodPressure">120/80 mmHg</span>
+                </li>
+                <li>
+                    <span class="tit">血糖</span>
+                    <span id="bloodSugar">5.6 mmol/L</span>
+                </li>
+                <li>
+                    <span class="tit">血脂</span>
+                    <span id="bloodLipid">正常</span>
+                </li>
+                <li>
+                    <span class="tit">肝功能</span>
+                    <span id="liverFunction">正常</span>
+                </li>
+                <li>
+                    <span class="tit">肾功能</span>
+                    <span id="kidneyFunction">正常</span>
+                </li>
+                <li>
+                    <span class="tit">心电图</span>
+                    <span id="ecg">正常</span>
+                </li>
+            `;
+            break;
+            
+        case 'medication':
+            detailHtml = `
+                <li>
+                    <span class="tit">阿司匹林</span>
+                    <span id="aspirin">100mg，每日早晨</span>
+                </li>
+                <li>
+                    <span class="tit">二甲双胍</span>
+                    <span id="metformin">500mg，每日三餐后</span>
+                </li>
+                <li>
+                    <span class="tit">氨氯地平</span>
+                    <span id="amlodipine">5mg，每日早晨</span>
+                </li>
+                <li>
+                    <span class="tit">服药提醒</span>
+                    <span id="medicationReminder">已设置</span>
+                </li>
+            `;
+            break;
+            
+        default:
+            detailHtml = '<li><span class="tit">暂无数据</span></li>';
+    }
+    
+    $('#detailContent').html(detailHtml);
+    
+    // 尝试从本地存储加载数据
+    var storedData = JSON.parse(localStorage.getItem(type + 'Data') || '{}');
+    if (Object.keys(storedData).length > 0) {
+        // 更新页面数据
+        for (var key in storedData) {
+            var element = $('#' + key);
+            if (element.length) {
+                element.text(storedData[key]);
+            }
+        }
+    }
+}
+
+// 编辑记录
+function editRecord(type) {
+    var typeNames = {
+        'basic': '基本信息',
+        'case': '病史记录',
+        'allergy': '过敏信息',
+        'family': '家族病史',
+        'checkup': '体检记录',
+        'medication': '用药记录'
+    };
+    
+    alert('编辑' + typeNames[type] + '功能开发中...\n\n提示：此功能需要后端API支持，目前仅展示静态数据。');
+}
+</script>
+</body>
+</html>

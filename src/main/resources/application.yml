@@ -1,0 +1,61 @@
+server:
+  port: 8080
+  error:
+    include-stacktrace: always
+    include-message: always
+
+spring:
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ylgj}?useUnicode=true&characterEncoding=UTF8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+  # Quartz 定时任务
+  quartz:
+    job-store-type: memory
+    scheduler-name: ylgjScheduler
+    properties:
+      org.quartz.threadPool.threadCount: 5
+
+# JWT 令牌配置（密钥建议通过环境变量 JWT_SECRET 覆盖）
+jwt:
+  secret: ${JWT_SECRET:ylgj-health-management-secret-key-2026-change-me}
+  expire: 7200  # 过期时间（秒），默认 2 小时
+
+# MyBatis Plus 配置
+mybatis-plus:
+  configuration:
+    # 开启驼峰命名转换  (这里可以不写，因为mybatisplus默认就是开启的)
+    map-underscore-to-camel-case: true
+    # 日志实现
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  # Mapper XML 文件位置
+  mapper-locations: classpath:mapper/*.xml
+  # 实体扫描包
+  type-aliases-package: com.ylgj.pojo
+
+# 日志配置
+logging:
+  level:
+    com.ylgj.mapper: debug
+
+# AI助手配置（DeepSeek API - 注册即送免费额度）
+# 申请地址：https://platform.deepseek.com/
+# 安全说明：API Key 通过环境变量 DEEPSEEK_API_KEY 注入，不再硬编码在配置文件中
+ai:
+  api-key: ${DEEPSEEK_API_KEY:}
+  api-url: ${AI_API_URL:https://api.deepseek.com/chat/completions}
+  model: ${AI_MODEL:deepseek-chat}
+
+# 文件上传路径
+upload:
+  path: ${user.home}/ylgj-uploads/
+  model: deepseek-v4-flash

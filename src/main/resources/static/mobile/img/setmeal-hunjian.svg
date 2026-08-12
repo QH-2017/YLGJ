@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B9D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C44569;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="heart1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8A9B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E84393;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- 背景 -->
+  <rect width="400" height="300" rx="16" fill="url(#bg1)"/>
+  <!-- 装饰圆 -->
+  <circle cx="350" cy="50" r="80" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="50" cy="250" r="60" fill="rgba(255,255,255,0.06)"/>
+  <!-- 双心图案 -->
+  <path d="M160 120 C160 100, 180 90, 195 105 C210 90, 230 100, 230 120 C230 145, 195 165, 195 165 C195 165, 160 145, 160 120Z" fill="rgba(255,255,255,0.9)" opacity="0.9"/>
+  <path d="M200 110 C200 95, 215 87, 227 98 C239 87, 254 95, 254 110 C254 130, 227 147, 227 147 C227 147, 200 130, 200 110Z" fill="rgba(255,255,255,0.7)" opacity="0.7"/>
+  <!-- 医疗十字 -->
+  <rect x="183" y="175" width="24" height="8" rx="2" fill="rgba(255,255,255,0.85)"/>
+  <rect x="191" y="167" width="8" height="24" rx="2" fill="rgba(255,255,255,0.85)"/>
+  <!-- 文字 -->
+  <text x="200" y="230" text-anchor="middle" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="28" font-weight="bold" fill="white">婚前体检</text>
+  <text x="200" y="258" text-anchor="middle" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="14" fill="rgba(255,255,255,0.8)">幸福从健康开始</text>
+</svg>

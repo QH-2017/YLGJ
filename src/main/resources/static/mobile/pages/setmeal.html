@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>预约</title>
+    <link rel="stylesheet" href="../css/page-health-order.css" />
+    <script>var API_BASE_URL = window.location.origin;</script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app" id="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">医疗管家</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    <!-- 页面内容 -->
+    <div class="contentBox">
+        <!-- 加载状态 -->
+        <div v-if="loading" style="text-align: center; padding: 50px;">
+            <p>加载中...</p>
+        </div>
+        
+        <!-- 错误提示 -->
+        <div v-else-if="error" style="text-align: center; padding: 50px;">
+            <p style="color: #f44336;">{{error}}</p>
+            <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px;">重试</button>
+        </div>
+        
+        <!-- 数据列表 -->
+        <div v-else class="list-column1">
+            <ul class="list">
+                <li class="list-item" v-for="setmeal in setmealList">
+                    <a class="link-page" :href="'setmeal_detail.html?id='+setmeal.id">
+                    <img class="img-object f-left" :src="getImgUrl(setmeal.img, setmeal.id, setmeal.name)" onerror="this.onerror=null;this.src='../img/widget-order_01.png'" alt="">
+                    <div class="item-body">
+                        <h4 class="ellipsis item-title">{{setmeal.name}}</h4>
+                        <p class="ellipsis-more item-desc">{{setmeal.remark}}</p>
+                        <p class="item-keywords">
+                            <span>{{setmeal.sex == '0' ? '性别不限' : setmeal.sex == '1' ? '男':'女'}}</span>
+                            <span>{{setmeal.age}}</span>
+                        </p>
+                    </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- 空状态 -->
+        <div v-if="!loading && !error && setmealList.length === 0" style="text-align: center; padding: 50px;">
+            <p>暂无套餐数据</p>
+        </div>
+    </div>
+</div>
+<!-- 页面 css js -->
+<script src="../plugins/vue/vue.js"></script>
+<script src="../plugins/vue/axios-0.18.0.js"></script>
+<script>
+    // 配置axios默认baseURL指向后端
+    axios.defaults.baseURL = API_BASE_URL;
+    var fallbackImg = '../img/widget-order_01.png';
+    
+    // 套餐ID与图片映射
+    var setmealImgMap = {
+        20: '../img/setmeal-hunjian.svg',           // 婚检
+        19: '../img/setmeal-ruzhijiancha.svg',      // 入职体检套餐-1
+        15: '../img/setmeal-zhengai-gaoduan.svg',   // 珍爱高端肿瘤筛查
+        13: '../img/setmeal-fenhong-zhenv.svg',     // 粉红珍爱(女)
+        12: '../img/setmeal-ruzhivyou.svg',         // 入职无忧体检套餐
+        14: '../img/widget-group-3.png',             // 阳光爸妈肿瘤筛查
+        21: '../img/widget-group-4.png',             // 其他套餐
+        22: '../img/widget-order_03.png',            // 其他套餐
+        25: '../img/widget-order_04.png',            // 其他套餐
+        27: '../img/widget-order_01.png',            // 其他套餐
+        28: '../img/widget-detail.png'               // 其他套餐
+    };
+    
+    // 根据套餐名称关键词匹配图片
+    function getImgByKeywords(name) {
+        if (!name) return null;
+        if (/女性|女|粉红|妇科/.test(name)) return '../img/setmeal-fenhong-zhenv.svg';
+        if (/婚/.test(name)) return '../img/setmeal-hunjian.svg';
+        if (/入职.*无忧|无忧.*入职/.test(name)) return '../img/setmeal-ruzhivyou.svg';
+        if (/入职|就业/.test(name)) return '../img/setmeal-ruzhijiancha.svg';
+        if (/肿瘤|癌|高端|筛查/.test(name)) return '../img/setmeal-zhengai-gaoduan.svg';
+        if (/爸妈|老年|养老/.test(name)) return '../img/widget-group-3.png';
+        if (/儿童|少儿|亲子/.test(name)) return '../img/widget-group-4.png';
+        return null;
+    }
+    
+    var vue = new Vue({
+        el:'#app',
+        data:{
+            setmealList:[],
+            loading: true,
+            error: null
+        },
+        mounted() {
+            this.loadSetmealList();
+        },
+        methods: {
+            getImgUrl(img, id, name) {
+                // 优先使用套餐ID映射的图片
+                if (id && setmealImgMap[id]) return setmealImgMap[id];
+                // 其次根据名称关键词匹配图片
+                var keywordImg = getImgByKeywords(name);
+                if (keywordImg) return keywordImg;
+                // 再次检查数据库中的img字段
+                if (!img) return fallbackImg;
+                if (/^\d{17,}\.\w+$/.test(img)) return fallbackImg;
+                if (img.startsWith('http')) return img;
+                if (img.startsWith('/uploads/setmeal/') && img.includes('/')) {
+                    // 检查文件是否存在（通过已上传的路径）
+                    return API_BASE_URL + img;
+                }
+                return API_BASE_URL + '/uploads/setmeal/' + img;
+            },
+            loadSetmealList() {
+                var self = this;
+                // 从后端API获取套餐列表
+                axios.get('/setmeal/findAll')
+                    .then(function(response) {
+                        if (response.data.flag) {
+                            var list = response.data.data || [];
+                            // 过滤掉无效记录：名称为空、纯英文测试数据、年龄异常、含测试字样
+                            list = list.filter(function(item) {
+                                if (!item.name || item.name.trim() === '') return false;
+                                // 过滤掉明显的测试数据（纯英文/数字组合）
+                                if (/^[a-zA-Z0-9_\-\s]+$/.test(item.name.trim())) return false;
+                                // 过滤掉年龄范围明显异常的数据（如28-881）
+                                if (item.age && /\d+-\d{3,}/.test(item.age)) return false;
+                                // 过滤掉含"测试"或"试测"字样的记录
+                                if (/测试|试测|test/i.test(item.name)) return false;
+                                return true;
+                            });
+                            // 按ID倒序排列（最新的在前）
+                            list.sort(function(a, b) { return b.id - a.id; });
+                            self.setmealList = list;
+                        } else {
+                            self.error = response.data.message || '加载失败';
+                        }
+                        self.loading = false;
+                    })
+                    .catch(function(err) {
+                        console.error('请求后端API失败，使用模拟数据', err);
+                        // 后端不可用时，降级使用模拟数据
+                        self.setmealList = [
+                            { id: 1, name: '基础体检套餐', remark: '包含常规检查项目，适合一般人群', img: null, sex: '0', age: '18-65岁', price: 299 },
+                            { id: 2, name: '精英体检套餐', remark: '全面检查，包含肿瘤标志物等高端项目', img: null, sex: '0', age: '30-70岁', price: 899 },
+                            { id: 3, name: '女性专属套餐', remark: '针对女性特点设计，包含妇科专项检查', img: null, sex: '2', age: '20-60岁', price: 599 },
+                            { id: 4, name: '男性专属套餐', remark: '针对男性特点设计，包含前列腺等检查', img: null, sex: '1', age: '20-60岁', price: 599 },
+                            { id: 5, name: '老年人体检套餐', remark: '针对老年人设计，包含心脑血管等检查', img: null, sex: '0', age: '60岁以上', price: 799 }
+                        ];
+                        self.loading = false;
+                    });
+            }
+        }
+    });
+</script>
+</body>

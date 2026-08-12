@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <link rel="icon" href="../img/icon01.png">
+    <title>我的预约 - 医疗管家</title>
+    <script>var API_BASE_URL = window.location.origin;</script>
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+    <script src="../plugins/vue/vue.js"></script>
+    <script src="../plugins/vue/axios-0.18.0.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f0f4f8; min-height: 100vh; }
+        .header { background: linear-gradient(135deg, #00897B, #26A69A); padding: 14px 16px; display: flex; align-items: center; color: white; }
+        .header .back { font-size: 20px; margin-right: 10px; cursor: pointer; }
+        .header .title { font-size: 17px; font-weight: 600; }
+
+        /* 搜索框 */
+        .search-box { background: #fff; padding: 12px 16px; margin-bottom: 8px; }
+        .search-row { display: flex; gap: 8px; }
+        .search-input { flex: 1; padding: 9px 12px; border: 1.5px solid #e0e5ea; border-radius: 8px; font-size: 13px; outline: none; background: #f8f9fa; }
+        .search-input:focus { border-color: #26A69A; background: white; }
+        .search-btn { padding: 9px 14px; background: #26A69A; color: white; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+        .search-hint { font-size: 11px; color: #aaa; margin-top: 6px; }
+
+        /* 统计卡片 */
+        .stat-bar { display: flex; gap: 8px; padding: 8px 16px 4px; }
+        .stat-item { flex: 1; text-align: center; padding: 10px 6px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+        .stat-item .num { font-size: 20px; font-weight: 700; }
+        .stat-item .label { font-size: 10px; color: #999; margin-top: 2px; }
+        .stat-item.pending .num { color: #FF9800; }
+        .stat-item.done .num { color: #4CAF50; }
+        .stat-item.total .num { color: #26A69A; }
+
+        /* 筛选标签 */
+        .filter-bar { display: flex; gap: 6px; padding: 8px 16px 6px; }
+        .filter-tag { padding: 4px 12px; border-radius: 14px; font-size: 12px; border: 1px solid #ddd; background: white; cursor: pointer; transition: all 0.2s; }
+        .filter-tag.active { background: #26A69A; color: white; border-color: #26A69A; }
+
+        /* 预约卡片 */
+        .order-card { background: white; margin: 0 16px 10px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.06); }
+        .order-card .card-top { padding: 12px 14px 8px; border-bottom: 1px dashed #eee; }
+        .order-card .card-top .setmeal-name { font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px; }
+        .order-card .card-top .order-date { font-size: 12px; color: #888; }
+        .order-card .card-top .status-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-left: 6px; }
+        .status-pending { background: #FFF3E0; color: #E65100; }
+        .status-done { background: #E8F5E9; color: #2E7D32; }
+        .status-cancelled { background: #FFEBEE; color: #C62828; }
+        .order-card .card-body { padding: 8px 14px; }
+        .info-row { display: flex; align-items: flex-start; padding: 5px 0; }
+        .info-row .info-icon { width: 18px; margin-right: 8px; text-align: center; font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+        .info-row .info-content { flex: 1; }
+        .info-row .info-label { font-size: 10px; color: #aaa; }
+        .info-row .info-value { font-size: 12px; color: #444; margin-top: 1px; }
+        .order-card .card-bottom { padding: 8px 14px; border-top: 1px solid #f5f5f5; display: flex; justify-content: flex-end; gap: 8px; }
+        .btn-sm { padding: 5px 12px; border-radius: 6px; font-size: 12px; border: none; cursor: pointer; }
+        .btn-cancel-order { background: #fff5f5; color: #F44336; border: 1px solid #ffcdd2; }
+        .empty { text-align: center; padding: 50px 20px; }
+        .empty .icon { font-size: 44px; margin-bottom: 10px; }
+        .empty .text { color: #999; font-size: 13px; }
+        .result-count { padding: 4px 16px; font-size: 11px; color: #bbb; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <span class="back" onclick="history.go(-1)">‹</span>
+        <span class="title">📅 我的预约</span>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="search-box">
+        <div class="search-row">
+            <input class="search-input" v-model="searchKeyword" @keydown.enter="search" placeholder="输入日期（如 07-10、2026-07）模糊查询">
+            <button class="search-btn" @click="search">搜索</button>
+        </div>
+        <div class="search-hint">💡 支持按预约日期或套餐名称模糊查询，留空显示全部</div>
+    </div>
+
+    <!-- 统计栏 -->
+    <div class="stat-bar">
+        <div class="stat-item total">
+            <div class="num">{{orders.length}}</div>
+            <div class="label">全部预约</div>
+        </div>
+        <div class="stat-item pending">
+            <div class="num">{{statusCount('待就诊')}}</div>
+            <div class="label">待就诊</div>
+        </div>
+        <div class="stat-item done">
+            <div class="num">{{statusCount('已到诊')}}</div>
+            <div class="label">已完成</div>
+        </div>
+    </div>
+
+    <!-- 筛选标签 -->
+    <div class="filter-bar">
+        <span class="filter-tag" :class="{active: filter === 'all'}" @click="filter='all'">全部</span>
+        <span class="filter-tag" :class="{active: filter === '待就诊'}" @click="filter='待就诊'">待就诊</span>
+        <span class="filter-tag" :class="{active: filter === '已到诊'}" @click="filter='已到诊'">已完成</span>
+        <span class="filter-tag" :class="{active: filter === '已取消'}" @click="filter='已取消'">已取消</span>
+    </div>
+
+    <!-- 结果数量 -->
+    <div class="result-count" v-if="!loading && filteredOrders.length > 0">
+        共 {{filteredOrders.length}} 条预约记录（按时间倒序）
+    </div>
+
+    <!-- 预约列表 -->
+    <div v-for="order in filteredOrders" :key="order.id" class="order-card">
+        <div class="card-top">
+            <span class="setmeal-name">{{order.setmealName}}</span>
+            <span class="status-badge" :class="order.statusClass">{{order.statusText}}</span>
+            <div class="order-date">📅 预约日期：{{order.orderDate}}</div>
+        </div>
+        <div class="card-body">
+            <div class="info-row">
+                <span class="info-icon">📍</span>
+                <div class="info-content">
+                    <div class="info-label">体检地点</div>
+                    <div class="info-value">{{order.location}}</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <span class="info-icon">👨‍⚕️</span>
+                <div class="info-content">
+                    <div class="info-label">主诊医师</div>
+                    <div class="info-value">{{order.doctor}}</div>
+                </div>
+            </div>
+            <div class="info-row">
+                <span class="info-icon">📞</span>
+                <div class="info-content">
+                    <div class="info-label">联系电话</div>
+                    <div class="info-value"><a :href="'tel:'+order.doctorPhone" style="color:#26A69A;text-decoration:none;">{{order.doctorPhone}}</a></div>
+                </div>
+            </div>
+            <div class="info-row">
+                <span class="info-icon">💰</span>
+                <div class="info-content">
+                    <div class="info-label">套餐价格</div>
+                    <div class="info-value">¥{{order.price}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="card-bottom" v-if="order.statusText === '待就诊'">
+            <button class="btn-sm btn-cancel-order" @click="cancelOrder(order)">取消预约</button>
+        </div>
+    </div>
+
+    <!-- 空状态 -->
+    <div v-if="loading" class="empty"><div class="icon">⏳</div><div class="text">加载中...</div></div>
+    <div v-else-if="filteredOrders.length === 0 && !loading" class="empty">
+        <div class="icon">📭</div>
+        <div class="text">{{searchKeyword ? '未找到匹配的预约记录' : '暂无预约记录'}}</div>
+    </div>
+</div>
+<script>
+axios.defaults.baseURL = API_BASE_URL;
+var doctorMap = {
+    12: { name: '张建国 主任医师', phone: '010-88886001', location: '北京协和医院体检中心 3楼A区' },
+    13: { name: '李雪梅 副主任医师', phone: '010-88886002', location: '北京协和医院体检中心 2楼B区（女性专区）' },
+    14: { name: '王德华 主任医师', phone: '010-88886003', location: '北京协和医院体检中心 5楼VIP区' },
+    15: { name: '陈明远 主任医师', phone: '010-88886004', location: '北京协和医院体检中心 4楼肿瘤筛查中心' },
+    19: { name: '赵晓东 副主任医师', phone: '010-88886005', location: '北京协和医院体检中心 3楼A区' },
+    20: { name: '刘婷婷 副主任医师', phone: '010-88886006', location: '北京协和医院体检中心 2楼婚检专区' }
+};
+var defaultDoctor = { name: '体检中心 接诊医师', phone: '010-88886000', location: '北京协和医院体检中心 1楼导诊台' };
+
+new Vue({
+    el: '#app',
+    data: { orders: [], filter: 'all', loading: true, searchKeyword: '' },
+    computed: {
+        filteredOrders: function() {
+            var self = this;
+            var list = self.orders;
+            // 按状态筛选
+            if (self.filter !== 'all') {
+                list = list.filter(function(o) { return o.statusText === self.filter; });
+            }
+            // 按日期或套餐名模糊搜索
+            if (self.searchKeyword.trim()) {
+                var kw = self.searchKeyword.trim().toLowerCase();
+                list = list.filter(function(o) {
+                    return (o.orderDate && o.orderDate.toLowerCase().indexOf(kw) >= 0) ||
+                           (o.setmealName && o.setmealName.toLowerCase().indexOf(kw) >= 0) ||
+                           (o.statusText && o.statusText.indexOf(kw) >= 0);
+                });
+            }
+            return list;
+        }
+    },
+    mounted: function() { this.loadOrders(); },
+    methods: {
+        search: function() { /* computed自动响应 */ },
+        statusCount: function(status) {
+            return this.orders.filter(function(o) { return o.statusText === status; }).length;
+        },
+        loadOrders: function() {
+            var self = this;
+            var phone = localStorage.getItem('userPhone') || localStorage.getItem('userId') || '';
+            if (!phone) { self.loading = false; return; }
+            axios.get('/order/findByPhone?phone=' + phone).then(function(res) {
+                if (res.data.flag && res.data.data) {
+                    self.orders = res.data.data.map(function(o) {
+                        var doc = doctorMap[o.setmealId] || defaultDoctor;
+                        var statusText = o.orderStatus || '未到诊';
+                        var statusClass = 'status-pending';
+                        if (statusText === '已到诊') statusClass = 'status-done';
+                        else if (statusText === '已取消') statusClass = 'status-cancelled';
+                        return {
+                            id: o.id,
+                            setmealName: o.setmealName || '未知套餐',
+                            setmealId: o.setmealId,
+                            orderDate: o.orderDate || '',
+                            statusText: statusText === '未到诊' ? '待就诊' : statusText,
+                            statusClass: statusClass,
+                            price: o.setmealPrice || '0',
+                            doctor: doc.name,
+                            doctorPhone: doc.phone,
+                            location: doc.location
+                        };
+                    });
+                    // 按预约日期降序排列（最新的在前）
+                    self.orders.sort(function(a, b) {
+                        return (b.orderDate || '').localeCompare(a.orderDate || '');
+                    });
+                }
+                self.loading = false;
+            }).catch(function() { self.loading = false; });
+        },
+        cancelOrder: function(order) {
+            if (!confirm('确定要取消「' + order.setmealName + '」的预约吗？')) return;
+            var self = this;
+            axios.post('/order/cancel', { orderId: String(order.id) }).then(function(res) {
+                if (res.data.flag) {
+                    order.statusText = '已取消';
+                    order.statusClass = 'status-cancelled';
+                    alert('取消成功');
+                } else {
+                    alert(res.data.message || '取消失败');
+                }
+            }).catch(function() { alert('网络错误'); });
+        }
+    }
+});
+</script>
+</body>
+</html>

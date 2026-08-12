@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3E0"/>
+      <stop offset="100%" stop-color="#FFE0B2"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="160" rx="12" fill="url(#bg)"/>
+  <!-- 碗图标 -->
+  <circle cx="75" cy="80" r="45" fill="rgba(255,152,0,0.1)"/>
+  <ellipse cx="75" cy="82" rx="24" ry="16" fill="#FF9800" opacity="0.85"/>
+  <ellipse cx="75" cy="72" rx="12" ry="8" fill="#FFB74D"/>
+  <circle cx="70" cy="75" r="3" fill="#E65100"/>
+  <circle cx="80" cy="73" r="2.5" fill="#E65100"/>
+  <circle cx="75" cy="80" r="2" fill="#E65100"/>
+  <!-- 右侧内容 -->
+  <text x="230" y="55" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="22" font-weight="bold" fill="#E65100">🥗 饮食指导</text>
+  <text x="230" y="80" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="13" fill="#FFB74D">合理膳食，营养均衡</text>
+  <rect x="140" y="100" width="180" height="28" rx="14" fill="#FF9800" opacity="0.9"/>
+  <text x="230" y="119" text-anchor="middle" font-family="Microsoft YaHei,sans-serif" font-size="11" fill="white">均衡营养 · 少油少盐 · 规律进餐</text>
+</svg>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <link rel="icon" href="../img/icon01.png">
+    <title>个人中心 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-login.css" />
+    <script>var API_BASE_URL = window.location.origin;</script>
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+    <script src="../plugins/vue/vue.js"></script>
+    <script src="../plugins/vue/axios-0.18.0.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .profile-card { background: linear-gradient(135deg, #26C6DA, #00ACC1); padding: 30px 20px 40px; text-align: center; position: relative; }
+        .profile-card::after { content: ''; position: absolute; bottom: -20px; left: 0; right: 0; height: 40px; background: #f5f5f5; border-radius: 20px 20px 0 0; }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.3); border: 3px solid rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 36px; color: white; }
+        .profile-name { font-size: 20px; font-weight: bold; color: white; margin-bottom: 4px; }
+        .profile-role { font-size: 13px; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.2); display: inline-block; padding: 2px 12px; border-radius: 10px; }
+        .profile-phone { font-size: 13px; color: rgba(255,255,255,0.9); margin-top: 6px; }
+        .menu-section { background: white; margin: 0 16px 12px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); position: relative; z-index: 1; }
+        .menu-section .section-title { font-size: 13px; color: #999; padding: 14px 16px 6px; }
+        .menu-item { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f5f5f5; text-decoration: none; color: #333; cursor: pointer; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item .icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 12px; color: white; flex-shrink: 0; }
+        .menu-item .text { flex: 1; }
+        .menu-item .text .title { font-size: 15px; color: #333; }
+        .menu-item .text .desc { font-size: 12px; color: #999; margin-top: 2px; }
+        .menu-item .arrow { color: #ccc; font-size: 14px; }
+        .icon-blue { background: #2196F3; } .icon-green { background: #4CAF50; } .icon-orange { background: #FF9800; }
+        .icon-purple { background: #9C27B0; } .icon-red { background: #F44336; } .icon-teal { background: #009688; }
+        .icon-pink { background: #E91E63; } .icon-cyan { background: #00BCD4; }
+        .logout-btn { display: block; margin: 20px 16px; padding: 14px; background: white; border: none; border-radius: 12px; font-size: 16px; color: #F44336; text-align: center; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06); width: calc(100% - 32px); }
+        .logout-btn:active { background: #fff5f5; }
+        .not-logged { text-align: center; padding: 60px 20px 30px; position: relative; z-index: 1; }
+        .not-logged .avatar-empty { width: 80px; height: 80px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 36px; color: #999; }
+        .not-logged p { color: #999; font-size: 14px; margin-bottom: 16px; }
+        .not-logged .login-link { display: inline-block; padding: 10px 40px; background: #26C6DA; color: white; border-radius: 20px; text-decoration: none; font-size: 15px; }
+        .version { text-align: center; padding: 20px; color: #ccc; font-size: 12px; }
+        /* 弹窗样式 */
+        .modal-mask { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .modal-box { background: white; width: 85%; border-radius: 12px; padding: 20px; }
+        .modal-title { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 16px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 4px; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
+        .modal-btns button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        .btn-cancel { background: #f5f5f5; color: #666; }
+        .btn-confirm { background: #26C6DA; color: white; }
+        /* AI聊天预览 */
+        .ai-preview { background: white; margin: 0 16px 12px; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); position: relative; z-index: 1; }
+        .ai-preview .ai-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .ai-preview .ai-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #26C6DA, #00ACC1); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 10px; }
+        .ai-preview .ai-info .ai-name { font-size: 15px; font-weight: bold; color: #333; }
+        .ai-preview .ai-info .ai-desc { font-size: 12px; color: #999; }
+        .ai-preview .ai-enter { display: block; text-align: center; padding: 10px; background: linear-gradient(135deg, #26C6DA, #00ACC1); color: white; border-radius: 8px; text-decoration: none; font-size: 14px; margin-top: 8px; }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">个人中心</span>
+        <span class="f-right"></span>
+    </div>
+    <div class="contentBox">
+        <div v-if="!isLoggedIn" class="not-logged">
+            <div class="avatar-empty">👤</div>
+            <p>登录后享受更多服务</p>
+            <a href="login.html" class="login-link">立即登录</a>
+            <div class="version" style="margin-top:40px;">医疗管家 v1.0.0</div>
+        </div>
+        <template v-else>
+            <div class="profile-card">
+                <div class="avatar">{{userRole === 'admin' ? '👑' : '👤'}}</div>
+                <div class="profile-name">{{userName}}</div>
+                <span class="profile-role">{{userRole === 'admin' ? '管理员' : '用户'}}</span>
+                <div class="profile-phone" v-if="userPhone">📱 {{userPhone}}</div>
+            </div>
+
+            <!-- AI健康助手 -->
+            <div class="ai-preview">
+                <div class="ai-header">
+                    <div class="ai-avatar">🤖</div>
+                    <div class="ai-info">
+                        <div class="ai-name">小医 - AI健康助手</div>
+                        <div class="ai-desc">基于 DeepSeek 大模型 · 专业健康咨询</div>
+                    </div>
+                </div>
+                <a href="ai-chat.html" class="ai-enter">💬 开始健康咨询</a>
+            </div>
+
+            <div class="menu-section">
+                <div class="section-title">我的服务</div>
+                <a href="setmeal.html" class="menu-item">
+                    <div class="icon icon-blue">🏥</div>
+                    <div class="text"><div class="title">体检预约</div><div class="desc">在线预约体检套餐</div></div>
+                    <span class="arrow">›</span>
+                </a>
+                <a href="my-orders.html" class="menu-item">
+                    <div class="icon icon-orange">📅</div>
+                    <div class="text"><div class="title">预约查询</div><div class="desc">查看和管理我的预约记录</div></div>
+                    <span class="arrow">›</span>
+                </a>
+                <a href="checkrecord_list.html" class="menu-item">
+                    <div class="icon icon-green">📋</div>
+                    <div class="text"><div class="title">体检报告</div><div class="desc">查看体检报告记录</div></div>
+                    <span class="arrow">›</span>
+                </a>
+                <a href="health-record.html" class="menu-item">
+                    <div class="icon icon-purple">📁</div>
+                    <div class="text"><div class="title">健康档案</div><div class="desc">个人健康档案管理</div></div>
+                    <span class="arrow">›</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="section-title">健康管理</div>
+                <a href="health-risk.html" class="menu-item">
+                    <div class="icon icon-orange">⚠️</div>
+                    <div class="text"><div class="title">健康评估</div><div class="desc">了解自身健康状况</div></div>
+                    <span class="arrow">›</span>
+                </a>
+                <a href="health-intervention.html" class="menu-item">
+                    <div class="icon icon-teal">💊</div>
+                    <div class="text"><div class="title">健康干预</div><div class="desc">健康干预方案跟踪</div></div>
+                    <span class="arrow">›</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="section-title">账号管理</div>
+                <div class="menu-item" @click="showPasswordModal = true">
+                    <div class="icon icon-cyan">🔑</div>
+                    <div class="text"><div class="title">修改密码</div><div class="desc">更改登录密码</div></div>
+                    <span class="arrow">›</span>
+                </div>
+            </div>
+
+            <button class="logout-btn" @click="logout">退出登录</button>
+            <div class="version">医疗管家 v1.0.0</div>
+        </template>
+
+        <!-- 修改密码弹窗 -->
+        <div class="modal-mask" v-if="showPasswordModal" @click.self="showPasswordModal=false">
+            <div class="modal-box">
+                <div class="modal-title">修改密码</div>
+                <div class="form-group"><label>原密码</label><input v-model="pwdForm.oldPassword" type="password" placeholder="请输入原密码"></div>
+                <div class="form-group"><label>新密码</label><input v-model="pwdForm.newPassword" type="password" placeholder="请输入新密码（至少6位）"></div>
+                <div class="form-group"><label>确认新密码</label><input v-model="pwdForm.confirmPassword" type="password" placeholder="请再次输入新密码"></div>
+                <div class="modal-btns">
+                    <button class="btn-cancel" @click="showPasswordModal=false">取消</button>
+                    <button class="btn-confirm" @click="changePassword">确认修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+axios.defaults.baseURL = API_BASE_URL;
+new Vue({
+    el: '#app',
+    data: {
+        isLoggedIn: !!localStorage.getItem('userId'),
+        userName: localStorage.getItem('userName') || '用户',
+        userId: localStorage.getItem('userId') || '',
+        userPhone: localStorage.getItem('userPhone') || '',
+        userRole: localStorage.getItem('userRole') || 'user',
+        showPasswordModal: false,
+        pwdForm: { oldPassword: '', newPassword: '', confirmPassword: '' }
+    },
+    methods: {
+        changePassword: function() {
+            var f = this.pwdForm;
+            if (!f.oldPassword) { alert('请输入原密码'); return; }
+            if (!f.newPassword || f.newPassword.length < 6) { alert('新密码至少6位'); return; }
+            if (f.newPassword !== f.confirmPassword) { alert('两次密码不一致'); return; }
+            var self = this;
+            axios.post('/user/changePassword', {
+                username: self.userId,
+                oldPassword: f.oldPassword,
+                newPassword: f.newPassword
+            }).then(function(res) {
+                if (res.data.flag) {
+                    alert('密码修改成功，请重新登录');
+                    self.showPasswordModal = false;
+                    self.pwdForm = { oldPassword: '', newPassword: '', confirmPassword: '' };
+                    localStorage.removeItem('userId');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userPhone');
+                    localStorage.removeItem('userRole');
+                    window.location.href = 'index.html';
+                } else {
+                    alert(res.data.message || '修改失败');
+                }
+            }).catch(function() { alert('网络错误'); });
+        },
+        logout: function() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userPhone');
+                localStorage.removeItem('userRole');
+                window.location.href = 'index.html';
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>

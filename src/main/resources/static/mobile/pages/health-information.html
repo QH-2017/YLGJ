@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>健康咨询 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-information.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">健康咨询</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+    
+    <!-- 健康咨询列表 -->
+    <div class="news-list">
+        <div class="news">
+            <div class="news-item">
+                <img class="img-object f-left" src="../img/article-hypertension.svg" alt="高血压预防" style="max-width:100%;height:auto;border-radius:6px;">
+                <div class="item-body">
+                    <h4 class="ellipsis item-title">高血压的预防与控制</h4>
+                    <p class="ellipsis-more item-desc">高血压是最常见的慢性病之一，也是心脑血管病最主要的危险因素。本文介绍了高血压的预防措施和日常控制方法。</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
+                <img class="img-object f-left" src="../img/article-diabetes.svg" alt="糖尿病饮食" style="max-width:100%;height:auto;border-radius:6px;">
+                <div class="item-body">
+                    <h4 class="ellipsis item-title">糖尿病患者的饮食指南</h4>
+                    <p class="ellipsis-more item-desc">合理的饮食对糖尿病患者至关重要。本文详细介绍了糖尿病患者的饮食原则和实用食谱建议。</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
+                <img class="img-object f-left" src="../img/article-exercise.svg" alt="运动健康" style="max-width:100%;height:auto;border-radius:6px;">
+                <div class="item-body">
+                    <h4 class="ellipsis item-title">科学运动，健康生活</h4>
+                    <p class="ellipsis-more item-desc">适量的运动有助于保持健康体重、降低慢性病风险。本文介绍了不同年龄段的运动建议和注意事项。</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
+                <img class="img-object f-left" src="../img/article-mental.svg" alt="心理健康" style="max-width:100%;height:auto;border-radius:6px;">
+                <div class="item-body">
+                    <h4 class="ellipsis item-title">心理健康的重要性</h4>
+                    <p class="ellipsis-more item-desc">心理健康与身体健康同样重要。本文探讨了如何保持良好的心理状态和应对压力的方法。</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
+                <img class="img-object f-left" src="../img/article-sleep.svg" alt="睡眠健康" style="max-width:100%;height:auto;border-radius:6px;">
+                <div class="item-body">
+                    <h4 class="ellipsis item-title">改善睡眠质量的实用技巧</h4>
+                    <p class="ellipsis-more item-desc">良好的睡眠是健康的基础。本文提供了改善睡眠质量的实用建议和常见睡眠问题的解决方法。</p>
+                </div>
+            </div>
+            
+            <div class="news-item">
+                <img class="img-object f-left" src="../img/article-nutrition.svg" alt="营养均衡" style="max-width:100%;height:auto;border-radius:6px;">
+                <div class="item-body">
+                    <h4 class="ellipsis item-title">营养均衡的饮食搭配</h4>
+                    <p class="ellipsis-more item-desc">均衡的营养摄入对维持健康至关重要。本文介绍了如何合理搭配各类营养素，保持健康饮食。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    // 检查登录状态
+    var userId = localStorage.getItem('userId');
+    if (!userId) {
+        if (confirm('请先登录后再查看健康咨询')) {
+            window.location.href = 'login.html';
+        }
+    }
+    
+    // 新闻项点击事件
+    $('.news-item').click(function() {
+        var title = $(this).find('.item-title').text();
+        window.location.href = 'health-informationDetail.html?title=' + encodeURIComponent(title);
+    });
+    
+    // 加载更多新闻
+    loadMoreNews();
+});
+
+// 加载更多新闻
+function loadMoreNews() {
+    // 这里可以添加从服务器加载更多新闻的逻辑
+    console.log('加载更多健康咨询内容...');
+}
+</script>
+</body>
+</html>

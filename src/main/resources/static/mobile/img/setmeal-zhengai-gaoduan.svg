@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6C5CE7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4834D4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- 背景 -->
+  <rect width="400" height="300" rx="16" fill="url(#bg3)"/>
+  <!-- 装饰 -->
+  <circle cx="350" cy="50" r="90" fill="rgba(255,255,255,0.05)"/>
+  <circle cx="40" cy="260" r="70" fill="rgba(255,255,255,0.04)"/>
+  <!-- 盾牌 -->
+  <path d="M200 70 L240 90 L240 140 Q240 175, 200 190 Q160 175, 160 140 L160 90 Z" fill="rgba(255,255,255,0.9)" stroke="rgba(255,255,255,0.9)" stroke-width="2"/>
+  <!-- 盾牌内十字 -->
+  <rect x="193" y="100" width="14" height="50" rx="3" fill="#6C5CE7"/>
+  <rect x="178" y="118" width="44" height="14" rx="3" fill="#6C5CE7"/>
+  <!-- DNA螺旋装饰 -->
+  <path d="M120 160 Q130 145, 140 160 Q150 175, 160 160" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M240 160 Q250 145, 260 160 Q270 175, 280 160" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <!-- 12项标记 -->
+  <circle cx="255" cy="85" r="18" fill="#E74C3C"/>
+  <text x="255" y="91" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">12</text>
+  <!-- 文字 -->
+  <text x="200" y="228" text-anchor="middle" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="22" font-weight="bold" fill="white">高端肿瘤筛查</text>
+  <text x="200" y="255" text-anchor="middle" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="13" fill="rgba(255,255,255,0.8)">珍爱生命 精准筛查</text>
+</svg>

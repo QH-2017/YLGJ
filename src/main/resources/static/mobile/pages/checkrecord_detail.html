@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,user-scalable=no,minimal-ui">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../img/icon01.png">
+    <title>体检报告详情 - 医疗管家</title>
+    <link rel="stylesheet" href="../css/page-health-index.css" />
+    <link rel="stylesheet" href="../css/page-health-login.css" />
+    <script src="../plugins/jquery/dist/jquery.min.js"></script>
+    <script src="../plugins/healthmobile.js"></script>
+</head>
+<body data-spy="scroll" data-target="#myNavbar" data-offset="150">
+<div class="app">
+    <!-- 页面头部 -->
+    <div class="top-header">
+        <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+        <span class="center">体检报告详情</span>
+        <span class="f-right"><i class="icon-more"></i></span>
+    </div>
+
+    <!-- 个人信息 -->
+    <div style="background: linear-gradient(135deg, #139589, #15b070); padding: 20px; color: #fff; text-align: center;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px; border: 3px solid rgba(255,255,255,0.5);">
+            <img id="avatar" src="" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <h3 id="personName" style="font-size: 20px; margin-bottom: 5px;"></h3>
+        <p id="personInfo" style="font-size: 13px; opacity: 0.9;"></p>
+    </div>
+
+    <!-- 报告摘要 -->
+    <div style="background: #fff; margin: 10px; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h4 style="font-size: 16px; color: #333; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0;">📋 报告摘要</h4>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div style="text-align: center; flex: 1;">
+                <div style="font-size: 22px; color: #4caf50; font-weight: bold;">正常</div>
+                <div style="font-size: 12px; color: #999;">正常项目</div>
+            </div>
+            <div style="text-align: center; flex: 1;">
+                <div style="font-size: 22px; color: #ff9800; font-weight: bold;">3</div>
+                <div style="font-size: 12px; color: #999;">异常项目</div>
+            </div>
+            <div style="text-align: center; flex: 1;">
+                <div style="font-size: 22px; color: #2196f3; font-weight: bold;">12</div>
+                <div style="font-size: 12px; color: #999;">总检查项</div>
+            </div>
+        </div>
+        <div style="background: #fff3e0; padding: 10px; border-radius: 6px; margin-top: 8px;">
+            <p style="font-size: 13px; color: #e65100;">⚠️ 您有3项指标异常，建议关注以下项目并定期复查。</p>
+        </div>
+    </div>
+
+    <!-- 检查项目详情 -->
+    <div style="background: #fff; margin: 0 10px 10px; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h4 style="font-size: 16px; color: #333; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0;">🔍 检查项目</h4>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">血压</p>
+                    <p style="font-size: 12px; color: #999;">收缩压/舒张压</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">120/80 mmHg</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">血糖</p>
+                    <p style="font-size: 12px; color: #999;">空腹血糖</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #ff9800; font-weight: 500;">6.8 mmol/L</p>
+                    <span style="font-size: 11px; color: #fff; background: #ff9800; padding: 2px 8px; border-radius: 10px;">偏高</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">血脂</p>
+                    <p style="font-size: 12px; color: #999;">总胆固醇</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">4.5 mmol/L</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">肝功能</p>
+                    <p style="font-size: 12px; color: #999;">谷丙转氨酶</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #ff9800; font-weight: 500;">52 U/L</p>
+                    <span style="font-size: 11px; color: #fff; background: #ff9800; padding: 2px 8px; border-radius: 10px;">偏高</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">肾功能</p>
+                    <p style="font-size: 12px; color: #999;">肌酐</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">82 μmol/L</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">血常规</p>
+                    <p style="font-size: 12px; color: #999;">白细胞计数</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">6.5 ×10⁹/L</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">尿常规</p>
+                    <p style="font-size: 12px; color: #999;">尿蛋白</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">阴性</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">心电图</p>
+                    <p style="font-size: 12px; color: #999;">窦性心律</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">正常</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">视力</p>
+                    <p style="font-size: 12px; color: #999;">左眼/右眼</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">4.8/5.0</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0; border-bottom: 1px solid #f5f5f5;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">BMI指数</p>
+                    <p style="font-size: 12px; color: #999;">体质指数</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #ff9800; font-weight: 500;">25.2</p>
+                    <span style="font-size: 11px; color: #fff; background: #ff9800; padding: 2px 8px; border-radius: 10px;">超重</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-item" style="padding: 10px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="font-size: 14px; color: #333; font-weight: 500;">甲状腺</p>
+                    <p style="font-size: 12px; color: #999;">B超检查</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 14px; color: #4caf50; font-weight: 500;">未见异常</p>
+                    <span style="font-size: 11px; color: #fff; background: #4caf50; padding: 2px 8px; border-radius: 10px;">正常</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 医生建议 -->
+    <div style="background: #fff; margin: 0 10px 20px; border-radius: 8px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h4 style="font-size: 16px; color: #333; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0;">💡 医生建议</h4>
+        <div style="padding: 10px; background: #f8fffe; border-radius: 6px; border-left: 3px solid #15b070;">
+            <p style="font-size: 13px; color: #555; line-height: 1.8;">1. 血糖偏高，建议控制饮食，减少高糖食物摄入，适当增加运动量。</p>
+            <p style="font-size: 13px; color: #555; line-height: 1.8;">2. 肝功能指标轻度异常，建议戒酒，保持规律作息，3个月后复查。</p>
+            <p style="font-size: 13px; color: #555; line-height: 1.8;">3. BMI超重，建议合理膳食，每周至少进行150分钟中等强度运动。</p>
+            <p style="font-size: 13px; color: #555; line-height: 1.8;">4. 建议每年定期体检，关注血压、血糖变化。</p>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function() {
+    // 获取URL参数
+    var urlParams = new URLSearchParams(window.location.search);
+    var name = urlParams.get('name') || '未知';
+    var gender = urlParams.get('gender') || '未知';
+    var packageName = urlParams.get('package') || '未知';
+    var date = urlParams.get('date') || '未知';
+    var avatar = urlParams.get('avatar') || 'renimg.png';
+
+    // 设置个人信息
+    $('#personName').text(name);
+    $('#personInfo').text(packageName + ' | ' + date);
+    $('#avatar').attr('src', '../img/' + avatar);
+});
+</script>
+</body>
+</html>
