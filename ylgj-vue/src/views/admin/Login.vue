@@ -40,7 +40,6 @@
       </el-form>
 
       <div class="login-footer">
-        <span>演示账号: admin / admin123</span>
         <router-link to="/admin/register">注册账户 →</router-link>
         <span>v2.0</span>
       </div>
@@ -68,9 +67,14 @@ async function handleLogin() {
   const valid = await formRef.value?.validate().catch(() => false)
   if (!valid) return
   loading.value = true
-  const ok = await userStore.login(form.username, form.password)
-  loading.value = false
-  if (ok) router.push('/admin/dashboard')
+  try {
+    const ok = await userStore.login(form.username, form.password)
+    if (ok) router.push('/admin/dashboard')
+  } catch (e) {
+    // 登录失败提示已由 axios 拦截器统一弹出，这里兜底避免按钮一直转圈
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
