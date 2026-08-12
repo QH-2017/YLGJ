@@ -25,6 +25,10 @@ spring:
     properties:
       org.quartz.threadPool.threadCount: 5
 
+# Quartz 定时任务调度（订单过期扫描，默认每天 01:00；测试可临时覆盖加快频率）
+quartz:
+  order-expire-cron: ${QUARTZ_ORDER_EXPIRE_CRON:0 0 1 * * ?}
+
 # JWT 令牌配置（密钥建议通过环境变量 JWT_SECRET 覆盖）
 jwt:
   secret: ${JWT_SECRET:ylgj-health-management-secret-key-2026-change-me}
