@@ -48,17 +48,27 @@ const searchPhone = ref(''); const tableData = ref<OrderEnriched[]>([]); const l
 
 async function loadData() {
   loading.value = true
-  const res = await findAllOrders()
-  if (res.flag) tableData.value = res.data
-  loading.value = false
+  try {
+    const res = await findAllOrders()
+    if (res.flag) tableData.value = res.data
+  } catch (e) {
+    // 错误提示已由 axios 拦截器统一处理，这里仅兜底避免未捕获异常
+  } finally {
+    loading.value = false
+  }
 }
 
 async function loadByPhone() {
   if (!searchPhone.value.trim()) { loadData(); return }
   loading.value = true
-  const res = await findOrdersByPhone(searchPhone.value.trim())
-  if (res.flag) tableData.value = res.data
-  loading.value = false
+  try {
+    const res = await findOrdersByPhone(searchPhone.value.trim())
+    if (res.flag) tableData.value = res.data
+  } catch (e) {
+    // 错误提示已由 axios 拦截器统一处理，这里仅兜底避免未捕获异常
+  } finally {
+    loading.value = false
+  }
 }
 
 async function handleStatusChange(row: OrderEnriched, val: string) {

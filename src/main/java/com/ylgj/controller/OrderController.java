@@ -86,38 +86,67 @@ public class OrderController {
     }
 
     /**
-     * 根据手机号查询该会员的所有预约记录（移动端报告查询用）
+     * 根据手机号模糊查询会员的预约记录（支持输入部分号码，管理端/移动端共用）
+     * <p>
+     * 返回结构同时包含：
+     * - 嵌套 member / setmeal 对象（管理端 OrderList、移动端 checkrecord_list 使用）
+     * - 平铺 memberName / setmealName / setmealPrice 字段（移动端 my-orders 使用，向后兼容）
      */
     @GetMapping("/findByPhone")
     public Result findByPhone(@RequestParam String phone) {
         if (phone == null || phone.trim().isEmpty()) {
             return new Result(false, "请输入手机号");
         }
-        // 查找会员
+        String keyword = phone.trim();
+        // 按手机号模糊匹配会员（支持部分号码）
         QueryWrapper<Member> memberWrapper = new QueryWrapper<>();
-        memberWrapper.eq("phoneNumber", phone.trim());
-        Member member = memberService.getOne(memberWrapper);
-        if (member == null) {
+        memberWrapper.like("phoneNumber", keyword);
+        memberWrapper.orderByDesc("regTime");
+        List<Member> members = memberService.list(memberWrapper);
+        if (members.isEmpty()) {
             return new Result(false, "未找到该手机号对应的会员，请先预约");
         }
-        // 查询该会员的所有订单
+        // 收集会员ID
+        Map<Integer, Member> memberMap = new HashMap<>();
+        List<Integer> memberIds = new ArrayList<>();
+        for (Member m : members) {
+            memberMap.put(m.getId(), m);
+            memberIds.add(m.getId());
+        }
+        // 查询这些会员的所有订单
         QueryWrapper<Order> orderWrapper = new QueryWrapper<>();
-        orderWrapper.eq("member_id", member.getId());
+        orderWrapper.in("member_id", memberIds);
         orderWrapper.orderByDesc("orderDate");
-        java.util.List<Order> orders = orderService.list(orderWrapper);
+        List<Order> orders = orderService.list(orderWrapper);
 
-        java.util.List<java.util.Map<String, Object>> list = new java.util.ArrayList<>();
+        List<Map<String, Object>> list = new ArrayList<>();
         for (Order order : orders) {
+            Member member = memberMap.get(order.getMemberId());
             Setmeal setmeal = setmealService.getById(order.getSetmealId());
-            java.util.Map<String, Object> item = new java.util.LinkedHashMap<>();
+            Map<String, Object> item = new LinkedHashMap<>();
             item.put("id", order.getId());
-            item.put("memberName", member.getName());
-            item.put("phone", member.getPhoneNumber());
-            item.put("setmealName", setmeal != null ? setmeal.getName() : "未知套餐");
-            item.put("setmealPrice", setmeal != null ? setmeal.getPrice() : 0);
             item.put("orderDate", order.getOrderDate() != null ? order.getOrderDate().toString() : "");
             item.put("orderType", order.getOrderType() != null ? order.getOrderType() : "");
             item.put("orderStatus", order.getOrderStatus() != null ? order.getOrderStatus() : "");
+            item.put("setmealId", order.getSetmealId());
+            // 嵌套会员信息（管理端 / checkrecord_list 使用）
+            Map<String, Object> memberInfo = new LinkedHashMap<>();
+            memberInfo.put("id", member != null ? member.getId() : null);
+            memberInfo.put("name", member != null ? member.getName() : "未知");
+            memberInfo.put("phoneNumber", member != null ? member.getPhoneNumber() : "");
+            memberInfo.put("sex", member != null ? member.getSex() : "");
+            item.put("member", memberInfo);
+            // 嵌套套餐信息
+            Map<String, Object> setmealInfo = new LinkedHashMap<>();
+            setmealInfo.put("id", setmeal != null ? setmeal.getId() : null);
+            setmealInfo.put("name", setmeal != null ? setmeal.getName() : "未知套餐");
+            setmealInfo.put("price", setmeal != null ? setmeal.getPrice() : 0);
+            item.put("setmeal", setmealInfo);
+            // 平铺字段（my-orders.html 使用，向后兼容）
+            item.put("memberName", member != null ? member.getName() : "未知");
+            item.put("phone", member != null ? member.getPhoneNumber() : "");
+            item.put("setmealName", setmeal != null ? setmeal.getName() : "未知套餐");
+            item.put("setmealPrice", setmeal != null ? setmeal.getPrice() : 0);
             list.add(item);
         }
         return new Result(true, "查询成功", list);

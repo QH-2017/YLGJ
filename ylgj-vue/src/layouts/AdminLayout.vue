@@ -96,9 +96,9 @@
             </span>
           </el-tooltip>
           <el-tooltip content="消息通知" placement="bottom">
-            <span class="header-btn notify-btn" @click="$router.push('/admin/news')">
+            <span class="header-btn notify-btn" @click="handleNotifyClick">
               <el-icon :size="16"><Bell /></el-icon>
-              <span class="notify-badge">3</span>
+              <span v-if="notifyCount > 0" class="notify-badge">{{ notifyCount }}</span>
             </span>
           </el-tooltip>
 
@@ -156,6 +156,14 @@ const appStore = useAppStore()
 
 const currentTitle = computed(() => (route.meta?.title as string) || '')
 const currentTime = ref('')
+// 未读消息数（点击铃铛后清零并持久化，刷新后保持已读状态）
+const notifyCount = ref(Number(localStorage.getItem('notify_count') ?? 3))
+
+function handleNotifyClick() {
+  notifyCount.value = 0
+  localStorage.setItem('notify_count', '0')
+  router.push('/admin/news')
+}
 
 let timer: number | null = null
 
