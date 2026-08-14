@@ -69,8 +69,8 @@
         <script src="../plugins/vue/vue.js"></script>
         <script src="../plugins/vue/axios-0.18.0.js"></script>
         <script>
-            // 配置axios默认baseURL指向后端
-            axios.defaults.baseURL = 'http://localhost:8080';
+            // 配置axios默认baseURL（同源，兼容手机局域网访问）
+            axios.defaults.baseURL = '';
             
             var vue = new Vue({
                 el: '#app',
