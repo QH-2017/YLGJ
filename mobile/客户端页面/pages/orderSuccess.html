@@ -22,7 +22,7 @@
         <div id="app" class="app">
             <!-- 页面头部 -->
             <div class="top-header">
-                <span class="f-left"><i class="icon-back" onclick="history.go(-1)"></i></span>
+                <span class="f-left"><i class="icon-back" onclick="location.href='../index.html'"></i></span>
                 <span class="center">医疗管家</span>
                 <span class="f-right"><i class="icon-more"></i></span>
             </div>
@@ -43,6 +43,9 @@
                 <div v-else class="notice-article">
                     <div class="info-title">
                         <span class="name">体检预约成功</span>
+                    </div>
+                    <div style="text-align:center; margin: 16px 0;">
+                        <a href="../index.html" style="display:inline-block; padding:10px 28px; background:linear-gradient(135deg,#14b8a6,#0d9488); color:#fff; border-radius:22px; text-decoration:none; font-size:15px;">🏠 返回首页</a>
                     </div>
                     <div class="notice-item">
                         <div class="item-title">预约信息</div>
