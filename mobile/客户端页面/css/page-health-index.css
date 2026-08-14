@@ -776,12 +776,12 @@ i {
   font-size: 32px;
 }
 
-/* 补偿部分 iconfont 字形视觉偏左的问题（实测 +2px 居中） */
+/* 补偿部分 iconfont 字形视觉偏左的问题（实测 +4px 居中） */
 .list-column2 ul li a .type-icon i.icon-zhen,
 .list-column2 ul li a .type-icon i.icon-star,
 .list-column2 ul li a .type-icon i.icon-plus,
 .list-column2 ul li a .type-icon i.icon-record {
-  transform: translate(calc(-50% + 2px), -50%);
+  transform: translate(calc(-50% + 4px), -50%);
 }
 
 /* 移除 iconfont 自带的白色圆形背景，统一由 .type-icon 容器提供 */
