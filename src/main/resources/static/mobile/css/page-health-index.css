@@ -666,8 +666,11 @@ i {
 }
 
 .list-column2 ul li a {
-  padding: 37px 20px 37px 40px;
+  padding: 46px 26px 46px 44px;
   position: relative;
+  display: block;
+  min-height: 160px;
+  box-sizing: border-box;
 }
 
 .list-column2 .gaodu{padding-top:200px;}
@@ -702,8 +705,17 @@ i {
   left:190px;
 }
 
+.list-column2 ul li a .type-title {
+  position: relative;
+  z-index: 1;
+  padding-right: 24px; /* 为右侧图标预留空间，避免文字与图标拥挤 */
+}
+
 .list-column2 ul li a h3 {
   color: #487eff;
+  font-size: 30px;
+  line-height: 1.4;
+  margin: 0 0 14px;
 }
 
 .list-column2 ul li a p {
@@ -737,9 +749,9 @@ i {
 .list-column2 ul li a .type-icon {
   position: absolute;
   top: 50%;
-  right: 10%;
+  right: 9%;
   transform: translateY(-50%);
-  font-size: 36px;
+  font-size: 40px;
 
 }
 
