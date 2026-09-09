@@ -165,7 +165,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { findAllUsers, register as registerApi } from '@/api/user'
+import { checkUsernameAvailable, register as registerApi } from '@/api/user'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 
@@ -282,11 +282,10 @@ async function checkUsername() {
   if (checkTimer) clearTimeout(checkTimer)
   checkTimer = setTimeout(async () => {
     try {
-      const res = await findAllUsers()
-      const exists = res.flag && res.data?.some((u: any) => u.username === form.username)
-      if (exists) {
+      const res = await checkUsernameAvailable(form.username)
+      if (res.flag && res.data === 'taken') {
         usernameStatus.value = 'taken'; usernameMsg.value = '该用户名已被注册'
-      } else {
+      } else if (res.flag) {
         usernameStatus.value = 'ok'; usernameMsg.value = '用户名可用'
       }
     } catch {

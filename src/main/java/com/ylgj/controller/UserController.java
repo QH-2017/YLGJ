@@ -145,6 +145,23 @@ public class UserController {
     }
 
     /**
+     * 校验用户名是否已被占用（注册页公开调用，无需登录）。
+     *
+     * @return data 为 "available"（可用）或 "taken"（已被占用）
+     */
+    @GetMapping("/checkUsername")
+    public Result checkUsername(@RequestParam String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return new Result(false, "用户名不能为空");
+        }
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("username", username.trim());
+        boolean exists = userService.count(wrapper) > 0;
+        return new Result(true, exists ? "用户名已被注册" : "用户名可用",
+                exists ? "taken" : "available");
+    }
+
+    /**
      * 用户注册（密码 BCrypt 加密存储）
      */
     @PostMapping("/register")

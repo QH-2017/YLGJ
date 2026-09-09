@@ -41,7 +41,7 @@ public class SecurityConfig {
     /** 匿名放行接口（白名单） */
     private static final String[] PERMIT_ALL_URLS = {
             // 认证相关
-            "/user/login", "/user/register", "/user/changePassword",
+            "/user/login", "/user/register", "/user/checkUsername", "/user/changePassword",
             // AI 健康助手（移动端匿名使用）
             "/ai/**",
             // 移动端套餐/检查组/检查项浏览（只读）

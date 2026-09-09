@@ -15,6 +15,11 @@ export function register(data: User): Promise<Result> {
   return request.post('/user/register', data).then(r => r.data)
 }
 
+/** 注册页用户名查重（公开接口，未登录可用） */
+export function checkUsernameAvailable(username: string): Promise<Result<string>> {
+  return request.get('/user/checkUsername', { params: { username } }).then(r => r.data)
+}
+
 export function changePassword(username: string, oldPassword: string, newPassword: string): Promise<Result> {
   return request.post('/user/changePassword', { username, oldPassword, newPassword }).then(r => r.data)
 }
