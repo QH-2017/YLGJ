@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
         '/ordersetting': backendTarget,
         '/report': backendTarget,
         '/ai': backendTarget,
+        '/menu': backendTarget,
         '/file': backendTarget,
         '/uploads': backendTarget,
         '/static': backendTarget

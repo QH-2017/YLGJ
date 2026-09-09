@@ -18,7 +18,7 @@
         </div>
         <div class="news-body">
           <div class="news-meta">
-            <el-tag :type="item.tagType" size="small">{{ item.category }}</el-tag>
+            <el-tag :type="item.tagType || 'primary'" size="small">{{ item.category }}</el-tag>
             <span class="news-date">{{ item.date }}</span>
           </div>
           <h4>{{ item.title }}</h4>

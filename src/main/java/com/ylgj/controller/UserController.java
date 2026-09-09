@@ -2,9 +2,13 @@ package com.ylgj.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ylgj.commons.Result;
+import com.ylgj.pojo.Role;
 import com.ylgj.pojo.User;
+import com.ylgj.pojo.UserRole;
 import com.ylgj.security.JwtUtil;
 import com.ylgj.security.SecurityUser;
+import com.ylgj.service.RoleService;
+import com.ylgj.service.UserRoleService;
 import com.ylgj.service.UserService;
 import com.ylgj.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +41,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRoleService userRoleService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -84,6 +96,7 @@ public class UserController {
         data.put("token", token);
         data.put("username", username);
         data.put("userId", loginUser.getId());
+        data.put("roles", resolveRoleNames(loginUser.getId()));
         return new Result(true, "登录成功", data);
     }
 
@@ -116,6 +129,7 @@ public class UserController {
             Map<String, Object> data = new HashMap<>();
             data.put("username", securityUser.getUsername());
             data.put("userId", securityUser.getUserId());
+            data.put("roles", resolveRoleNames(securityUser.getUserId()));
             if (user != null) {
                 data.put("telephone", user.getTelephone());
                 data.put("gender", user.getGender());
@@ -264,6 +278,23 @@ public class UserController {
     /**
      * 记录登录失败次数（首次失败时设置锁定过期时间）
      */
+    /**
+     * 解析用户角色名（user → role 关联），无角色时返回空列表
+     */
+    private List<String> resolveRoleNames(Integer userId) {
+        List<String> names = new ArrayList<>();
+        List<Integer> roleIds = new ArrayList<>();
+        for (UserRole ur : userRoleService.list(new QueryWrapper<UserRole>().eq("user_id", userId))) {
+            if (ur.getRoleId() != null) roleIds.add(ur.getRoleId());
+        }
+        if (!roleIds.isEmpty()) {
+            for (Role r : roleService.listByIds(roleIds)) {
+                if (r != null && r.getName() != null) names.add(r.getName());
+            }
+        }
+        return names;
+    }
+
     private void recordLoginFail(String failKey) {
         long count = redisUtil.increment(failKey);
         if (count == 1) {

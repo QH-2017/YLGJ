@@ -244,9 +244,10 @@ INSERT INTO `t_menu` (`id`, `name`, `link_url`, `path`, `priority`, `icon`, `des
 (10, '数据导出中心', '', '/admin/export', 10, 'Download', '数据导出', NULL, 1),
 (11, '健康资讯管理', '', '/admin/news', 11, 'Bell', '健康资讯', NULL, 1);
 
--- 角色-菜单（管理员拥有全部）
+-- 角色-菜单（管理员拥有全部；健康管理师仅保留 数据概览/会员/预约/预约条件/统计分析 子集）
 INSERT INTO `t_role_menu` (`role_id`, `menu_id`) VALUES
-(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11);
+(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11),
+(2,1),(2,5),(2,6),(2,7),(2,8);
 
 -- 权限
 INSERT INTO `t_permission` (`id`, `name`, `keyword`, `description`) VALUES

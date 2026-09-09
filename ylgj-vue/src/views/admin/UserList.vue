@@ -65,7 +65,7 @@
           :page-size="pageSize"
           :total="filteredUsers.length"
           layout="prev, pager, next"
-          small
+          size="small"
           background
         />
       </div>

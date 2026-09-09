@@ -72,7 +72,7 @@
         <el-table-column prop="fileName" label="文件名" min-width="200" />
         <el-table-column prop="type" label="类型" width="120">
           <template #default="{ row }">
-            <el-tag size="small" :type="row.tagType">{{ row.type }}</el-tag>
+            <el-tag size="small" :type="row.tagType || 'primary'">{{ row.type }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="size" label="文件大小" width="100" />

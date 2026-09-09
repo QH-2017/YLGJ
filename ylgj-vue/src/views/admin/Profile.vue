@@ -9,7 +9,7 @@
         </div>
         <div class="profile-meta">
           <h2>{{ userStore.username || '管理员' }}</h2>
-          <p><span class="role-badge">系统管理员</span> · 最后登录: {{ lastLoginTime }}</p>
+          <p><span class="role-badge">{{ userStore.roleLabel }}</span> · 最后登录: {{ lastLoginTime }}</p>
         </div>
         <el-button type="primary" plain size="small" @click="showEdit = true">编辑资料</el-button>
       </div>

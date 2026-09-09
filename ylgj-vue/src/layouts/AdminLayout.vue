@@ -30,7 +30,7 @@
         <div class="user-info">
           <span class="user-name">{{ userStore.username || '管理员' }}</span>
           <span class="user-role">
-            <span class="role-dot"></span> 系统管理员
+            <span class="role-dot"></span> {{ userStore.roleLabel }}
           </span>
         </div>
       </div>
@@ -38,18 +38,17 @@
       <!-- 导航菜单 -->
       <nav class="sidebar-nav">
         <div
-          v-for="route in adminRoutes"
-          :key="route.path"
-          v-show="!route.meta?.hidden"
+          v-for="item in navItems"
+          :key="item.path"
           class="nav-item"
-          :class="{ active: isActive('/admin/' + route.path) }"
-          @click="navigate('/admin/' + route.path)"
+          :class="{ active: isActive(item.path) }"
+          @click="navigate(item.path)"
         >
           <span class="nav-icon">
-            <el-icon :size="18"><component :is="route.meta?.icon" /></el-icon>
+            <el-icon :size="18"><component :is="item.icon" /></el-icon>
           </span>
-          <span class="nav-label">{{ route.meta?.title }}</span>
-          <span v-if="isActive('/admin/' + route.path)" class="nav-indicator"></span>
+          <span class="nav-label">{{ item.title }}</span>
+          <span v-if="isActive(item.path)" class="nav-indicator"></span>
         </div>
       </nav>
 
@@ -148,11 +147,26 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { adminRoutes } from '@/router'
+import { getMyMenus } from '@/api/menu'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const appStore = useAppStore()
+
+interface NavItem { path: string; title: string; icon: string }
+
+// RBAC 动态菜单：优先渲染后端「当前用户可见菜单」，接口失败/为空时回退静态路由
+const backendMenus = ref<any[]>([])
+const navItems = computed<NavItem[]>(() => {
+  const dyn = backendMenus.value
+    .filter((m: any) => m && m.path && m.path.startsWith('/admin/'))
+    .map((m: any) => ({ path: m.path, title: m.name || m.path, icon: m.icon || 'Menu' }))
+  if (dyn.length) return dyn
+  return (adminRoutes as any[])
+    .filter((r: any) => !r.meta?.hidden && r.path)
+    .map((r: any) => ({ path: '/admin/' + r.path, title: r.meta?.title, icon: r.meta?.icon }))
+})
 
 const currentTitle = computed(() => (route.meta?.title as string) || '')
 const currentTime = ref('')
@@ -172,7 +186,14 @@ function updateTime() {
   currentTime.value = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
-onMounted(() => { updateTime(); timer = window.setInterval(updateTime, 1000) })
+onMounted(async () => {
+  updateTime()
+  timer = window.setInterval(updateTime, 1000)
+  try {
+    const res = await getMyMenus()
+    if (res.flag && res.data?.length) backendMenus.value = res.data
+  } catch (e) { /* 拉取失败则回退静态路由 */ }
+})
 onUnmounted(() => { if (timer) clearInterval(timer) })
 
 function isActive(path: string) {
