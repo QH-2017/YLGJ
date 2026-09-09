@@ -47,6 +47,23 @@ public class MemberController {
         }
     }
 
+    /**
+     * 移动端按手机号精确查询会员健康档案（匿名，供“我的/健康档案”使用）
+     */
+    @GetMapping("/findByPhone")
+    public Result findByPhone(@RequestParam String phone) {
+        if (phone == null || phone.trim().isEmpty()) {
+            return new Result(false, "请输入手机号");
+        }
+        QueryWrapper<Member> wrapper = new QueryWrapper<>();
+        wrapper.eq("phoneNumber", phone.trim());
+        Member member = memberService.getOne(wrapper, false);
+        if (member == null) {
+            return new Result(false, "未找到该手机号对应的健康档案，请先完成一次预约");
+        }
+        return new Result(true, "查询成功", member);
+    }
+
     @PostMapping("/findPage")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
         Page<Member> pageParam = new Page<>(queryPageBean.getCurrentPage(), queryPageBean.getPageSize());

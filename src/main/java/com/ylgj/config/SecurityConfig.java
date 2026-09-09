@@ -53,7 +53,7 @@ public class SecurityConfig {
             "/order/submit", "/order/findByPhone", "/order/findById/**",
             "/order/findAll", "/order/cancel",
             // 移动端会员查询
-            "/member/findPage",
+            "/member/findPage", "/member/findByPhone",
             // 报表导出下载
             "/report/export**",
             // 静态资源与页面

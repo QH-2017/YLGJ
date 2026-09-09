@@ -19,6 +19,11 @@ export function findMemberById(id: number): Promise<Result<Member>> {
   return request.get(`/member/findById/${id}`).then(r => r.data)
 }
 
+/** 移动端按手机号精确查询健康档案（匿名） */
+export function findMemberByPhone(phone: string): Promise<Result<Member>> {
+  return request.get('/member/findByPhone', { params: { phone } }).then(r => r.data)
+}
+
 export function editMember(data: Member): Promise<Result> {
   return request.post('/member/edit', data).then(r => r.data)
 }
