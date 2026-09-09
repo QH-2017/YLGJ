@@ -2,6 +2,7 @@ package com.ylgj.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ylgj.commons.Result;
+import com.ylgj.mapper.ReportMapper;
 import com.ylgj.pojo.*;
 import com.ylgj.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class ReportController {
     @Autowired private MemberService memberService;
     @Autowired private OrderService orderService;
     @Autowired private SetmealService setmealService;
+    @Autowired private ReportMapper reportMapper;
 
     /**
      * 运营数据统计
@@ -35,29 +37,16 @@ public class ReportController {
         long thisWeekNewMember = memberService.count(new QueryWrapper<Member>().ge("regTime", today.minusDays(7)));
         long thisMonthNewMember = memberService.count(new QueryWrapper<Member>().ge("regTime", today.withDayOfMonth(1)));
 
-        // 预约统计（基于订单表）
-        List<Order> allOrders = orderService.list();
-        long todayOrderNumber = allOrders.stream()
-            .filter(o -> o.getOrderDate() != null && o.getOrderDate().equals(today))
-            .count();
-        long thisWeekOrderNumber = allOrders.stream()
-            .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.minusDays(7)))
-            .count();
-        long thisMonthOrderNumber = allOrders.stream()
-            .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.withDayOfMonth(1)))
-            .count();
-        long thisMonthVisitsNumber = allOrders.stream()
-            .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.withDayOfMonth(1))
-                && "已到诊".equals(o.getOrderStatus()))
-            .count();
-        long thisWeekVisitsNumber = allOrders.stream()
-            .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.minusDays(7))
-                && "已到诊".equals(o.getOrderStatus()))
-            .count();
-        long todayVisitsNumber = allOrders.stream()
-            .filter(o -> o.getOrderDate() != null && o.getOrderDate().equals(today)
-                && "已到诊".equals(o.getOrderStatus()))
-            .count();
+        // 预约统计（SQL COUNT 聚合，避免全表拉取后在内存统计）
+        long todayOrderNumber = orderService.count(new QueryWrapper<Order>().eq("orderDate", today));
+        long thisWeekOrderNumber = orderService.count(new QueryWrapper<Order>().ge("orderDate", today.minusDays(7)));
+        long thisMonthOrderNumber = orderService.count(new QueryWrapper<Order>().ge("orderDate", today.withDayOfMonth(1)));
+        long thisMonthVisitsNumber = orderService.count(new QueryWrapper<Order>()
+            .ge("orderDate", today.withDayOfMonth(1)).eq("orderStatus", "已到诊"));
+        long thisWeekVisitsNumber = orderService.count(new QueryWrapper<Order>()
+            .ge("orderDate", today.minusDays(7)).eq("orderStatus", "已到诊"));
+        long todayVisitsNumber = orderService.count(new QueryWrapper<Order>()
+            .eq("orderDate", today).eq("orderStatus", "已到诊"));
 
         reportData.put("reportDate", sdf.format(new Date()));
         reportData.put("todayNewMember", todayNewMember);
@@ -71,23 +60,24 @@ public class ReportController {
         reportData.put("thisMonthOrderNumber", thisMonthOrderNumber);
         reportData.put("thisMonthVisitsNumber", thisMonthVisitsNumber);
 
-        // 热门套餐统计（按预约数量降序排列，取前5名）
+        // 热门套餐统计：一次 SQL GROUP BY 聚合 + 套餐信息回填（按预约数量降序，取前5名）
+        Map<Integer, Long> countBySetmeal = orderCountGroupBySetmeal();
+        long totalOrderCount = orderService.count();
         List<Map<String, Object>> hotSetmeal = new ArrayList<>();
-        List<Setmeal> allSetmeals = setmealService.list();
-        long totalOrderCount = allOrders.size();
-        for (Setmeal s : allSetmeals) {
-            long count = allOrders.stream().filter(o -> s.getId().equals(o.getSetmealId())).count();
-            if (count > 0) {
+        if (!countBySetmeal.isEmpty()) {
+            List<Setmeal> orderedSetmeals = setmealService.listByIds(new ArrayList<>(countBySetmeal.keySet()));
+            for (Setmeal s : orderedSetmeals) {
+                long count = countBySetmeal.getOrDefault(s.getId(), 0L);
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("name", s.getName());
                 item.put("setmeal_count", count);
-                item.put("proportion", totalOrderCount > 0 ? 
+                item.put("proportion", totalOrderCount > 0 ?
                     Math.round(count * 1000.0 / totalOrderCount) / 10.0 + "%" : "0%");
                 hotSetmeal.add(item);
             }
+            hotSetmeal.sort((a, b) -> Long.compare((long) b.get("setmeal_count"), (long) a.get("setmeal_count")));
+            if (hotSetmeal.size() > 5) hotSetmeal = new ArrayList<>(hotSetmeal.subList(0, 5));
         }
-        hotSetmeal.sort((a, b) -> Long.compare((long) b.get("setmeal_count"), (long) a.get("setmeal_count")));
-        if (hotSetmeal.size() > 5) hotSetmeal = hotSetmeal.subList(0, 5);
         reportData.put("hotSetmeal", hotSetmeal);
 
         return new Result(true, "获取运营数据成功", reportData);
@@ -125,22 +115,18 @@ public class ReportController {
      */
     @GetMapping("/getSetmealReport")
     public Result getSetmealReport() {
-        List<Setmeal> setmealList = setmealService.list();
+        // SQL GROUP BY 聚合：仅对被预约过的套餐统计，避免全表内存过滤
+        Map<Integer, Long> countBySetmeal = orderCountGroupBySetmeal();
         List<Map<String, Object>> result = new ArrayList<>();
-        List<Order> allOrders = orderService.list();
-
-        for (Setmeal setmeal : setmealList) {
-            long count = allOrders.stream()
-                .filter(o -> setmeal.getId().equals(o.getSetmealId()))
-                .count();
-            if (count > 0) {
+        if (!countBySetmeal.isEmpty()) {
+            List<Setmeal> setmealList = setmealService.listByIds(new ArrayList<>(countBySetmeal.keySet()));
+            for (Setmeal setmeal : setmealList) {
                 Map<String, Object> item = new HashMap<>();
                 item.put("name", setmeal.getName());
-                item.put("value", count);
+                item.put("value", countBySetmeal.getOrDefault(setmeal.getId(), 0L));
                 result.add(item);
             }
         }
-
         return new Result(true, "获取套餐统计数据成功", result);
     }
 
@@ -164,19 +150,17 @@ public class ReportController {
             long thisWeekNewMember = memberService.count(new QueryWrapper<Member>().ge("regTime", today.minusDays(7)));
             long thisMonthNewMember = memberService.count(new QueryWrapper<Member>().ge("regTime", today.withDayOfMonth(1)));
 
+            // 订单明细仍全量拉取（用于 Sheet3 预约明细），统计指标走 SQL COUNT
             List<Order> allOrders = orderService.list();
-            long todayOrders = allOrders.stream()
-                .filter(o -> o.getOrderDate() != null && o.getOrderDate().equals(today)).count();
-            long thisWeekOrders = allOrders.stream()
-                .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.minusDays(7))).count();
-            long thisMonthOrders = allOrders.stream()
-                .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.withDayOfMonth(1))).count();
-            long todayVisits = allOrders.stream()
-                .filter(o -> o.getOrderDate() != null && o.getOrderDate().equals(today) && "已到诊".equals(o.getOrderStatus())).count();
-            long thisWeekVisits = allOrders.stream()
-                .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.minusDays(7)) && "已到诊".equals(o.getOrderStatus())).count();
-            long thisMonthVisits = allOrders.stream()
-                .filter(o -> o.getOrderDate() != null && !o.getOrderDate().isBefore(today.withDayOfMonth(1)) && "已到诊".equals(o.getOrderStatus())).count();
+            long todayOrders = orderService.count(new QueryWrapper<Order>().eq("orderDate", today));
+            long thisWeekOrders = orderService.count(new QueryWrapper<Order>().ge("orderDate", today.minusDays(7)));
+            long thisMonthOrders = orderService.count(new QueryWrapper<Order>().ge("orderDate", today.withDayOfMonth(1)));
+            long todayVisits = orderService.count(new QueryWrapper<Order>()
+                .eq("orderDate", today).eq("orderStatus", "已到诊"));
+            long thisWeekVisits = orderService.count(new QueryWrapper<Order>()
+                .ge("orderDate", today.minusDays(7)).eq("orderStatus", "已到诊"));
+            long thisMonthVisits = orderService.count(new QueryWrapper<Order>()
+                .ge("orderDate", today.withDayOfMonth(1)).eq("orderStatus", "已到诊"));
 
             // 创建Excel工作簿
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
@@ -400,12 +384,12 @@ public class ReportController {
                 cell.setCellStyle(headerStyle);
             }
 
-            List<Setmeal> setmealList = setmealService.list();
-            long totalOrders = allOrders.size();
+            Map<Integer, Long> exportCountBySetmeal = orderCountGroupBySetmeal();
+            List<Setmeal> setmealList = setmealService.listByIds(new ArrayList<>(exportCountBySetmeal.keySet()));
+            long totalOrders = exportCountBySetmeal.values().stream().mapToLong(Long::longValue).sum();
             int rowNum = 2;
             for (Setmeal setmeal : setmealList) {
-                long count = allOrders.stream()
-                    .filter(o -> setmeal.getId().equals(o.getSetmealId())).count();
+                long count = exportCountBySetmeal.getOrDefault(setmeal.getId(), 0L);
                 if (count > 0) {
                     org.apache.poi.xssf.usermodel.XSSFRow row = sheet2.createRow(rowNum++);
                     row.setHeightInPoints(22);
@@ -491,5 +475,19 @@ public class ReportController {
                 response.getWriter().write("<script>alert('导出失败：" + e.getMessage() + "');history.back();</script>");
             } catch (Exception ex) {}
         }
+    }
+
+    /**
+     * 各套餐订单数统计：委托 SQL GROUP BY 聚合，返回 setmealId -> count 映射。
+     */
+    private Map<Integer, Long> orderCountGroupBySetmeal() {
+        Map<Integer, Long> map = new HashMap<>();
+        for (Map<String, Object> row : reportMapper.countOrderGroupBySetmeal()) {
+            if (row.get("setmealId") != null && row.get("cnt") != null) {
+                map.put(((Number) row.get("setmealId")).intValue(),
+                        ((Number) row.get("cnt")).longValue());
+            }
+        }
+        return map;
     }
 }

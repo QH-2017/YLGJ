@@ -1,6 +1,7 @@
 package com.ylgj.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ylgj.commons.BizException;
 import com.ylgj.commons.Result;
 import com.ylgj.pojo.Member;
 import com.ylgj.pojo.Order;
@@ -155,98 +156,47 @@ public class OrderController {
     /**
      * 移动端提交预约（自动创建会员 + 创建订单）
      * 前端传参: name, sex, telephone, idCard, setmealId, orderDate
+     * <p>参数解析完成后交给 {@link OrderService#submitOrder}，业务校验与事务（建会员 + 建订单）统一在 Service 层完成。</p>
      */
     @PostMapping("/submit")
     public Result submit(@RequestBody Map<String, String> params) {
-        try {
-            String name = params.get("name");
-            String sex = params.get("sex");
-            String telephone = params.get("telephone");
-            String idCard = params.get("idCard");
-            String setmealIdStr = params.get("setmealId");
-            String orderDateStr = params.get("orderDate");
-
-            // 参数校验
-            if (name == null || name.trim().isEmpty()) {
-                return new Result(false, "请输入体检人姓名");
-            }
-            if (telephone == null || !telephone.matches("^1[3-9]\\d{9}$")) {
-                return new Result(false, "请输入正确的11位手机号");
-            }
-            if (idCard == null || !idCard.matches("^\\d{17}[\\dXx]$")) {
-                return new Result(false, "请输入正确的18位身份证号");
-            }
-            if (setmealIdStr == null || setmealIdStr.isEmpty()) {
-                return new Result(false, "缺少套餐信息");
-            }
-            if (orderDateStr == null || orderDateStr.isEmpty()) {
-                return new Result(false, "请选择体检日期");
-            }
-
-            Integer setmealId = Integer.parseInt(setmealIdStr);
-            LocalDate orderDate = LocalDate.parse(orderDateStr);
-
-            // 查找或创建会员（按手机号查找）
-            QueryWrapper<Member> wrapper = new QueryWrapper<>();
-            wrapper.eq("phoneNumber", telephone);
-            Member member = memberService.getOne(wrapper);
-
-            if (member == null) {
-                // 新建会员
-                member = new Member();
-                member.setName(name.trim());
-                member.setSex(sex);
-                member.setPhoneNumber(telephone);
-                member.setIdCard(idCard);
-                member.setRegTime(LocalDate.now());
-                memberService.save(member);
-            }
-
-            // 创建订单
-            Order order = new Order();
-            order.setMemberId(member.getId());
-            order.setSetmealId(setmealId);
-            order.setOrderDate(orderDate);
-            order.setOrderType("微信预约");
-            order.setOrderStatus("未到诊");
-            orderService.save(order);
-
-            return new Result(true, "预约成功", order.getId());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new Result(false, "预约失败：" + e.getMessage());
+        String setmealIdStr = params.get("setmealId");
+        String orderDateStr = params.get("orderDate");
+        if (setmealIdStr == null || setmealIdStr.trim().isEmpty()) {
+            throw new BizException("缺少套餐信息");
         }
+        if (orderDateStr == null || orderDateStr.trim().isEmpty()) {
+            throw new BizException("请选择体检日期");
+        }
+        Integer setmealId;
+        LocalDate orderDate;
+        try {
+            setmealId = Integer.parseInt(setmealIdStr.trim());
+            orderDate = LocalDate.parse(orderDateStr.trim());
+        } catch (Exception e) {
+            throw new BizException("套餐或体检日期格式不正确");
+        }
+        Order order = orderService.submitOrder(
+                params.get("name"), params.get("sex"), params.get("telephone"),
+                params.get("idCard"), setmealId, orderDate);
+        return new Result(true, "预约成功", order.getId());
     }
 
     /**
-     * 修改预约信息
+     * 修改预约信息（改期 / 改状态）
      */
     @PostMapping("/update")
     public Result update(@RequestBody Map<String, String> params) {
-        try {
-            String orderIdStr = params.get("orderId");
-            String orderDateStr = params.get("orderDate");
-            String orderStatus = params.get("orderStatus");
-
-            if (orderIdStr == null || orderIdStr.isEmpty()) {
-                return new Result(false, "缺少订单ID");
-            }
-            Integer orderId = Integer.parseInt(orderIdStr);
-            Order order = orderService.getById(orderId);
-            if (order == null) {
-                return new Result(false, "订单不存在");
-            }
-            if (orderDateStr != null && !orderDateStr.isEmpty()) {
-                order.setOrderDate(LocalDate.parse(orderDateStr));
-            }
-            if (orderStatus != null && !orderStatus.isEmpty()) {
-                order.setOrderStatus(orderStatus);
-            }
-            orderService.updateById(order);
-            return new Result(true, "修改成功");
-        } catch (Exception e) {
-            return new Result(false, "修改失败：" + e.getMessage());
+        String orderIdStr = params.get("orderId");
+        if (orderIdStr == null || orderIdStr.isEmpty()) {
+            throw new BizException("缺少订单ID");
         }
+        Integer orderId = Integer.parseInt(orderIdStr.trim());
+        String orderDateStr = params.get("orderDate");
+        LocalDate orderDate = (orderDateStr == null || orderDateStr.isEmpty())
+                ? null : LocalDate.parse(orderDateStr);
+        orderService.updateOrder(orderId, orderDate, params.get("orderStatus"));
+        return new Result(true, "修改成功");
     }
 
     /**
@@ -254,21 +204,11 @@ public class OrderController {
      */
     @PostMapping("/cancel")
     public Result cancel(@RequestBody Map<String, String> params) {
-        try {
-            String orderIdStr = params.get("orderId");
-            if (orderIdStr == null || orderIdStr.isEmpty()) {
-                return new Result(false, "缺少订单ID");
-            }
-            Integer orderId = Integer.parseInt(orderIdStr);
-            Order order = orderService.getById(orderId);
-            if (order == null) {
-                return new Result(false, "订单不存在");
-            }
-            order.setOrderStatus("已取消");
-            orderService.updateById(order);
-            return new Result(true, "取消成功");
-        } catch (Exception e) {
-            return new Result(false, "取消失败：" + e.getMessage());
+        String orderIdStr = params.get("orderId");
+        if (orderIdStr == null || orderIdStr.isEmpty()) {
+            throw new BizException("缺少订单ID");
         }
+        orderService.cancelOrder(Integer.parseInt(orderIdStr.trim()));
+        return new Result(true, "取消成功");
     }
 }

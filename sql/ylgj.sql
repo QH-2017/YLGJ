@@ -182,7 +182,8 @@ CREATE TABLE `t_member` (
   `birthday`     DATE DEFAULT NULL COMMENT '生日',
   `remark`       VARCHAR(500) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`),
-  KEY `idx_phone` (`phoneNumber`)
+  -- 手机号唯一：保证"按手机号查/建会员"（/order/submit）不会命中多条记录
+  UNIQUE KEY `uk_phoneNumber` (`phoneNumber`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='会员表';
 
 -- ---------------------------------------------------------------------

@@ -10,7 +10,7 @@
         <version>2.4.3</version>
     </parent>
 
-    <groupId>com.gxkj</groupId>
+    <groupId>com.ylgj</groupId>
     <artifactId>ylgj</artifactId>
     <version>1.0-SNAPSHOT</version>
 

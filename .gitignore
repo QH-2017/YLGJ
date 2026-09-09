@@ -41,6 +41,8 @@ dist/
 
 ### 环境变量与密钥（禁止入库）###
 .env
+.env.*
+!.env.example
 *.pem
 *.key
 *.jks
