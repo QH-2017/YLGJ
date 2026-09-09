@@ -232,16 +232,16 @@ onMounted(async () => {
   box-shadow: 0 2px 12px rgba(0,0,0,.05);
 
   .profile-bg {
-    height: 80px;
+    height: 96px;
     background: linear-gradient(135deg, #0d2f50 0%, #14b8a6 100%);
   }
 
   .profile-header-content {
     display: flex;
     align-items: center;
-    padding: 0 24px 20px;
+    padding: 20px 24px 24px;
     gap: 16px;
-    margin-top: -28px;
+    /* 不再整体上移进入渐变条：名字/头像保持在下方白色区，避免黑色文字被绿色背景遮挡 */
 
     .profile-avatar {
       width: 72px; height: 72px;
