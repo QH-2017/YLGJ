@@ -53,12 +53,12 @@ DROP TABLE IF EXISTS `t_menu`;
 CREATE TABLE `t_menu` (
   `id`            INT NOT NULL AUTO_INCREMENT COMMENT '主键',
   `name`          VARCHAR(50) DEFAULT NULL COMMENT '菜单名称',
-  `linkUrl`       VARCHAR(200) DEFAULT NULL COMMENT '链接地址',
+  `link_url`      VARCHAR(200) DEFAULT NULL COMMENT '链接地址',
   `path`          VARCHAR(200) DEFAULT NULL COMMENT '前端路由路径',
   `priority`      INT DEFAULT NULL COMMENT '排序优先级',
   `icon`          VARCHAR(100) DEFAULT NULL COMMENT '图标',
   `description`   VARCHAR(500) DEFAULT NULL COMMENT '描述',
-  `parentMenuId`  INT DEFAULT NULL COMMENT '父菜单ID',
+  `parent_menuId` INT DEFAULT NULL COMMENT '父菜单ID',
   `level`         INT DEFAULT NULL COMMENT '菜单层级',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='菜单表';
@@ -231,7 +231,7 @@ VALUES (1, '系统管理员', 'ADMIN', '拥有系统全部权限');
 INSERT INTO `t_user_role` (`user_id`, `role_id`) VALUES (1, 1);
 
 -- 菜单（管理端）
-INSERT INTO `t_menu` (`id`, `name`, `linkUrl`, `path`, `priority`, `icon`, `description`, `parentMenuId`, `level`) VALUES
+INSERT INTO `t_menu` (`id`, `name`, `link_url`, `path`, `priority`, `icon`, `description`, `parent_menuId`, `level`) VALUES
 (1, '数据概览', '', '/admin/dashboard', 1, 'Odometer', '仪表盘', NULL, 1),
 (2, '套餐信息管理', '', '/admin/setmeal', 2, 'DishDot', '体检套餐管理', NULL, 1),
 (3, '检查组管理', '', '/admin/checkgroup', 3, 'Collection', '检查组管理', NULL, 1),

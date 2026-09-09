@@ -32,7 +32,7 @@ public class Menu extends Model<Menu> {
     @TableField("name")
     private String name;
 
-    @TableField("linkUrl")
+    @TableField("link_url")
     private String linkUrl;
 
     @TableField("path")
@@ -47,7 +47,7 @@ public class Menu extends Model<Menu> {
     @TableField("description")
     private String description;
 
-    @TableField("parentMenuId")
+    @TableField("parent_menuId")
     private Integer parentMenuId;
 
     @TableField("level")
