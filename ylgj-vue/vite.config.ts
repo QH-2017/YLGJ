@@ -29,7 +29,8 @@ export default defineConfig(({ mode }) => {
         '/report': backendTarget,
         '/ai': backendTarget,
         '/file': backendTarget,
-        '/uploads': backendTarget
+        '/uploads': backendTarget,
+        '/static': backendTarget
       }
     }
   }

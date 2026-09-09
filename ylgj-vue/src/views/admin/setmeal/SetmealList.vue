@@ -24,8 +24,12 @@
         </el-table-column>
         <el-table-column label="套餐图片" width="100">
           <template #default="{ row }">
-            <el-image v-if="row.img" :src="row.img" fit="cover" style="width:60px;height:40px;border-radius:4px" preview-teleported />
-            <span v-else style="color:#ccc">无图片</span>
+            <el-image :src="imageSrc(row.img)" fit="cover" style="width:60px;height:40px;border-radius:4px" preview-teleported>
+              <template #error>
+                <!-- 图片缺失/加载失败时回落到占位图，避免显示"加载失败" -->
+                <img :src="PLACEHOLDER_IMG" alt="套餐图片" style="width:60px;height:40px;border-radius:4px;object-fit:cover" />
+              </template>
+            </el-image>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
@@ -63,6 +67,15 @@ const pageSize = ref(10)
 const total = ref(0)
 
 const sexMap: Record<string, string> = { '0': '男', '1': '女', '2': '不限' }
+
+/** 缺图时的统一占位图（后端 /static 静态资源提供，随代码打包可迁移） */
+const PLACEHOLDER_IMG = '/static/setmeal-placeholder.svg'
+
+/** 图片地址归一：无图 / 裸文件名 → 占位图；http(s) 或 /uploads 完整路径原样使用 */
+function imageSrc(img?: string | null): string {
+  if (img && (img.startsWith('/') || /^https?:\/\//.test(img))) return img
+  return PLACEHOLDER_IMG
+}
 
 async function loadData() {
   loading.value = true
