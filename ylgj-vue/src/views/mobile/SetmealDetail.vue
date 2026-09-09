@@ -35,7 +35,7 @@
 
     <!-- 立即预约按钮 -->
     <div style="position:sticky;bottom:60px;padding:12px 0">
-      <el-button type="success" size="large" style="width:100%;height:48px;font-size:16px" @click="$router.push(`/order/${detail.id}`)">
+      <el-button type="success" size="large" style="width:100%;height:48px;font-size:16px" @click="$router.push(`/mobile/order/${detail.id}`)">
         立即预约
       </el-button>
     </div>

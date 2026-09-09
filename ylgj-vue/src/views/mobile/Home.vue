@@ -19,7 +19,7 @@
 
     <!-- 热门套餐 -->
     <h3 style="margin-bottom:12px;font-size:16px">🔥 热门体检套餐</h3>
-    <div v-for="s in setmeals" :key="s.id" class="m-card" style="cursor:pointer" @click="$router.push(`/setmeal/${s.id}`)">
+    <div v-for="s in setmeals" :key="s.id" class="m-card" style="cursor:pointer" @click="$router.push(`/mobile/setmeal/${s.id}`)">
       <div style="display:flex;gap:12px">
         <el-image v-if="s.img" :src="s.img" fit="cover" style="width:100px;height:80px;border-radius:8px;flex-shrink:0" />
         <div v-else style="width:100px;height:80px;border-radius:8px;flex-shrink:0;background:#e0f0e8;display:flex;align-items:center;justify-content:center;color:#2E8B57;font-size:24px">🏥</div>
@@ -44,10 +44,10 @@ const router = useRouter()
 const setmeals = ref<Setmeal[]>([])
 
 const services = [
-  { label: '体检预约', icon: 'DishDot', color: '#409eff', onClick: () => router.push('/setmeal') },
-  { label: 'AI助手', icon: 'ChatDotRound', color: '#67c23a', onClick: () => router.push('/ai') },
-  { label: '我的预约', icon: 'Tickets', color: '#e6a23c', onClick: () => router.push('/orders') },
-  { label: '健康档案', icon: 'Notebook', color: '#8b5cf6', onClick: () => router.push('/health') }
+  { label: '体检预约', icon: 'DishDot', color: '#409eff', onClick: () => router.push('/mobile/setmeal') },
+  { label: 'AI助手', icon: 'ChatDotRound', color: '#67c23a', onClick: () => router.push('/mobile/ai') },
+  { label: '我的预约', icon: 'Tickets', color: '#e6a23c', onClick: () => router.push('/mobile/orders') },
+  { label: '健康档案', icon: 'Notebook', color: '#8b5cf6', onClick: () => router.push('/mobile/health') }
 ]
 
 onMounted(async () => {

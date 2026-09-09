@@ -40,17 +40,17 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const tabRoutes = ['/', '/setmeal', '/ai', '/profile']
-const showTabBar = computed(() => tabRoutes.includes(route.path) || route.path.startsWith('/setmeal') && !route.params.id)
+const tabRoutes = ['/mobile', '/mobile/setmeal', '/mobile/ai', '/mobile/profile']
+const showTabBar = computed(() => tabRoutes.includes(route.path) || route.path.startsWith('/mobile/setmeal') && !route.params.id)
 const showHeader = computed(() => true)
-const showBack = computed(() => route.path !== '/' && route.path !== '/setmeal' && route.path !== '/ai' && route.path !== '/profile')
+const showBack = computed(() => route.path !== '/mobile' && route.path !== '/mobile/setmeal' && route.path !== '/mobile/ai' && route.path !== '/mobile/profile')
 
 const title = computed(() => (route.meta?.title as string) || '医疗管家')
 
 const tabs = [
-  { path: '/', label: '首页', icon: 'House' },
-  { path: '/setmeal', label: '体检套餐', icon: 'DishDot' },
-  { path: '/ai', label: 'AI助手', icon: 'ChatDotRound' },
-  { path: '/profile', label: '我的', icon: 'User' }
+  { path: '/mobile', label: '首页', icon: 'House' },
+  { path: '/mobile/setmeal', label: '体检套餐', icon: 'DishDot' },
+  { path: '/mobile/ai', label: 'AI助手', icon: 'ChatDotRound' },
+  { path: '/mobile/profile', label: '我的', icon: 'User' }
 ]
 </script>

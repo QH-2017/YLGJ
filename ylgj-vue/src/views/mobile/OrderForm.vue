@@ -56,7 +56,7 @@ async function handleSubmit() {
     const res = await submitOrder({ ...form })
     if (res.flag) {
       ElMessage.success('预约成功！')
-      router.push('/orders')
+      router.push('/mobile/orders')
     }
   } catch (e) { /* handled */ }
   submitting.value = false

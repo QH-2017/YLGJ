@@ -187,7 +187,7 @@ async function toggleStation(row: User) {
   const target = row.station === '1' ? '0' : '1'
   const action = target === '0' ? '停用' : '启用'
   try {
-    const res = await updateUser({ id: row.id, station: target })
+    const res = await updateUser({ id: row.id, username: row.username, station: target })
     if (res.flag) {
       ElMessage.success(`账号已${action}`)
       loadUsers()

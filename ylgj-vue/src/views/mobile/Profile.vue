@@ -27,9 +27,9 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const menuItems = [
-  { label: '我的预约', icon: 'Tickets', color: '#409eff', onClick: () => router.push('/orders') },
-  { label: '健康档案', icon: 'Notebook', color: '#67c23a', onClick: () => router.push('/health') },
-  { label: 'AI健康助手', icon: 'ChatDotRound', color: '#8b5cf6', onClick: () => router.push('/ai') },
-  { label: '体检套餐', icon: 'DishDot', color: '#e6a23c', onClick: () => router.push('/setmeal') }
+  { label: '我的预约', icon: 'Tickets', color: '#409eff', onClick: () => router.push('/mobile/orders') },
+  { label: '健康档案', icon: 'Notebook', color: '#67c23a', onClick: () => router.push('/mobile/health') },
+  { label: 'AI健康助手', icon: 'ChatDotRound', color: '#8b5cf6', onClick: () => router.push('/mobile/ai') },
+  { label: '体检套餐', icon: 'DishDot', color: '#e6a23c', onClick: () => router.push('/mobile/setmeal') }
 ]
 </script>

@@ -192,8 +192,10 @@ const routes: RouteRecordRaw[] = [
     children: adminRoutes,
     meta: { requiresAuth: true }
   },
+  // 根路径直达 PC 管理后台（未登录由守卫自动跳转 /admin/login）
+  { path: '/', redirect: '/admin/dashboard' },
   {
-    path: '/',
+    path: '/mobile',
     component: () => import('@/layouts/MobileLayout.vue'),
     children: mobileRoutes
   },

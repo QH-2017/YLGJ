@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 style="margin-bottom:12px;font-size:16px">全部体检套餐</h3>
-    <div v-for="s in setmeals" :key="s.id" class="m-card" style="cursor:pointer" @click="$router.push(`/setmeal/${s.id}`)">
+    <div v-for="s in setmeals" :key="s.id" class="m-card" style="cursor:pointer" @click="$router.push(`/mobile/setmeal/${s.id}`)">
       <div style="display:flex;gap:12px">
         <el-image v-if="s.img" :src="s.img" fit="cover" style="width:100px;height:80px;border-radius:8px;flex-shrink:0" />
         <div v-else style="width:100px;height:80px;border-radius:8px;flex-shrink:0;background:#e0f0e8;display:flex;align-items:center;justify-content:center;color:#2E8B57;font-size:24px">🏥</div>
